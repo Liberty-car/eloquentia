@@ -47,10 +47,16 @@
 @keyframes quetia-respire {
   0%,
   100% {
-    transform: translateY(0) scale(1);
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  20% {
+    transform: translateY(-4px) rotate(-3deg) scale(1.03);
   }
   50% {
-    transform: translateY(-3px) scale(1.03);
+    transform: translateY(-7px) rotate(0deg) scale(1.06);
+  }
+  80% {
+    transform: translateY(-4px) rotate(3deg) scale(1.03);
   }
 }
 @keyframes quetia-cligne {
@@ -78,15 +84,15 @@
 }
 
 .quetia-idle {
-  animation: quetia-respire 3.4s ease-in-out infinite;
+  animation: quetia-respire 2.6s ease-in-out infinite;
   transform-origin: 50% 92%;
   transform-box: fill-box;
 }
 .quetia-idle--vif {
-  animation-duration: 2.3s;
+  animation-duration: 1.8s;
 }
 .quetia-idle--lent {
-  animation-duration: 5.2s;
+  animation-duration: 4s;
 }
 .quetia-yeux {
   animation: quetia-cligne 5.5s ease-in-out infinite;

@@ -2,26 +2,16 @@ import { it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { writeFileSync } from 'node:fs';
 import { QuetiaSprite } from './QuetiaSprite';
-import type { Expression } from './sprites';
-import type { Stade } from './types';
+import { FxOverlay } from './Fx';
 
-it('génère un aperçu SVG des sprites', () => {
-  const stades: Stade[] = [1, 2, 3, 4];
-  const exprs: Expression[] = ['radieux', 'serein', 'fatigue'];
-  const cell = 160;
-  let parts = '';
-  exprs.forEach((e, row) =>
-    stades.forEach((s, col) => {
-      const inner = renderToStaticMarkup(
-        <QuetiaSprite stade={s} expression={e} size={130} />,
-      );
-      const x = col * cell + 15;
-      const y = row * cell + 10;
-      parts += `<g transform="translate(${x} ${y})">${inner}<text x="65" y="150" font-size="12" text-anchor="middle" fill="#1f2937">stade ${s} / ${e}</text></g>`;
-    }),
+it('génère un aperçu de l’état content', () => {
+  const sprite = renderToStaticMarkup(
+    <QuetiaSprite stade={2} expression="radieux" size={150} />,
   );
-  const w = 4 * cell + 30;
-  const h = 3 * cell + 20;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><rect width="100%" height="100%" fill="#fbfaf8"/>${parts}</svg>`;
-  writeFileSync('/tmp/quetia.svg', svg);
+  const coeur = renderToStaticMarkup(<FxOverlay kind="coeur" />);
+  // Deux petits coeurs au-dessus de la tête (viewBox coeur = 120).
+  const c1 = `<g transform="translate(70 -6) scale(0.22)">${coeur}</g>`;
+  const c2 = `<g transform="translate(96 0) scale(0.14)">${coeur}</g>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="100%" height="100%" fill="#fbfaf8"/><g transform="translate(25 30)">${sprite}${c1}${c2}</g></svg>`;
+  writeFileSync('/tmp/quetia-content.svg', svg);
 });

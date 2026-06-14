@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { cn } from '../../lib/cn';
 import { FxOverlay, Zzz } from './Fx';
@@ -34,6 +34,22 @@ export function Mascotte() {
   const reduced = useReducedMotion() ?? false;
   const [panelOuvert, setPanelOuvert] = useState(false);
   const [fx, setFx] = useState<FxActif | null>(null);
+  // Petit moment de joie quand on clique sur la créature (sourire + coeur).
+  const [content, setContent] = useState(false);
+  const contentTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function gererClic() {
+    setPanelOuvert((o) => !o);
+    setContent(true);
+    if (contentTimer.current) clearTimeout(contentTimer.current);
+    contentTimer.current = setTimeout(() => setContent(false), 1400);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (contentTimer.current) clearTimeout(contentTimer.current);
+    };
+  }, []);
 
   const reactionId = m?.reaction?.id;
   useEffect(() => {
@@ -57,7 +73,8 @@ export function Mascotte() {
 
   if (!m) return null;
 
-  const expression = expressionBande(m.humeurBande);
+  // Au clic, la créature est contente quelle que soit son humeur réelle.
+  const expression = content ? 'radieux' : expressionBande(m.humeurBande);
   const rythme = reduced ? '' : rythmeIdle(m.humeurBande);
 
   return (
@@ -101,19 +118,54 @@ export function Mascotte() {
 
       <button
         type="button"
-        onClick={() => setPanelOuvert((o) => !o)}
+        onClick={gererClic}
         aria-label={`${m.stadeNom}, humeur ${m.bandeLabel}. Ouvrir le détail de ${m.nom}.`}
         aria-expanded={panelOuvert}
         className="pointer-events-auto relative grid h-20 w-20 place-items-center rounded-full border-2 border-projecteur bg-papier shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
       >
         <div className="relative h-16 w-16">
-          <QuetiaSprite
-            stade={m.stade}
-            expression={expression}
-            idleClassName={rythme}
+          <motion.div
             className="h-full w-full"
-          />
-          {m.humeurBande === 'epuise' && !reduced && <Zzz />}
+            animate={
+              content && !reduced ? { scale: [1, 1.18, 1] } : { scale: 1 }
+            }
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+          >
+            <QuetiaSprite
+              stade={m.stade}
+              expression={expression}
+              idleClassName={rythme}
+              className="h-full w-full"
+            />
+          </motion.div>
+          {m.humeurBande === 'epuise' && !content && !reduced && <Zzz />}
+
+          <AnimatePresence>
+            {content && (
+              <>
+                <motion.div
+                  key="coeur-1"
+                  className="pointer-events-none absolute left-1/2 top-0 h-5 w-5 -translate-x-1/2"
+                  initial={{ opacity: 0, scale: 0.4, y: 6 }}
+                  animate={{ opacity: 1, scale: 1, y: -10 }}
+                  exit={{ opacity: 0, y: -18 }}
+                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                >
+                  <FxOverlay kind="coeur" />
+                </motion.div>
+                <motion.div
+                  key="coeur-2"
+                  className="pointer-events-none absolute left-1/2 top-1 h-3 w-3"
+                  initial={{ opacity: 0, scale: 0.3, y: 4 }}
+                  animate={{ opacity: 1, scale: 1, y: -8 }}
+                  exit={{ opacity: 0, y: -14 }}
+                  transition={{ duration: 0.5, delay: 0.08, ease: 'easeOut' }}
+                >
+                  <FxOverlay kind="coeur" />
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
 
           <AnimatePresence>
             {fx && (
