@@ -141,105 +141,108 @@ export function QuetiaSprite({
         opacity={0.1}
       />
 
-      <g
-        className={idleClassName}
-        transform={`translate(60 64) scale(${p.echelle}) translate(-60 -64)`}
-      >
-        {/* crête jaune */}
-        {p.crete && (
-          <path
-            d="M60 22 q5 8 0 16 q-5 -8 0 -16 z M52 26 q3 7 0 13 q-4 -7 0 -13 z M68 26 q-3 7 0 13 q4 -7 0 -13 z"
-            fill="#f5df4d"
-            stroke="#e6c93c"
-            strokeWidth={0.8}
-          />
-        )}
-
-        {/* oreilles */}
-        <g fill={`url(#${gCorps})`} stroke="#c85b7e" strokeWidth={1.2}>
-          <ellipse
-            cx={40}
-            cy={36}
-            rx={9}
-            ry={13}
-            transform="rotate(-22 40 36)"
-          />
-          <ellipse
-            cx={80}
-            cy={36}
-            rx={9}
-            ry={13}
-            transform="rotate(22 80 36)"
-          />
-        </g>
-        <g fill="#ffd777">
-          <ellipse
-            cx={41}
-            cy={35}
-            rx={4}
-            ry={6.5}
-            transform="rotate(-22 41 35)"
-          />
-          <ellipse
-            cx={79}
-            cy={35}
-            rx={4}
-            ry={6.5}
-            transform="rotate(22 79 35)"
-          />
-        </g>
-
-        {/* corps */}
-        <ellipse
-          cx={60}
-          cy={66}
-          rx={36}
-          ry={34}
-          fill={`url(#${gCorps})`}
-          stroke="#c85b7e"
-          strokeWidth={1.4}
-        />
-        {/* ventre */}
-        <ellipse cx={60} cy={74} rx={22} ry={20} fill={`url(#${gVentre})`} />
-
-        {/* pattes */}
-        <g fill="#cf6184">
-          <ellipse cx={48} cy={98} rx={9} ry={6} />
-          <ellipse cx={72} cy={98} rx={9} ry={6} />
-        </g>
-
-        {/* joues */}
-        <circle cx={40} cy={70} r={6} fill={chevron} opacity={0.95} />
-        <circle cx={80} cy={70} r={6} fill={chevron} opacity={0.95} />
-
-        <Yeux expression={expression} />
-        <Bouche expression={expression} />
-
-        {/* goutte de sueur */}
-        {expression === 'fatigue' && (
-          <path
-            d="M86 52 q3 5 0 7 q-3 -2 0 -7 z"
-            fill="#7cc7e0"
-            stroke="#57b0cf"
-            strokeWidth={0.6}
-          />
-        )}
-
-        {/* accessoire : petit micro (éloquence) */}
-        {p.accessoire && (
-          <g transform="rotate(20 96 80)">
-            <rect
-              x={94}
-              y={78}
-              width={3.4}
-              height={16}
-              rx={1.7}
-              fill="#7b8190"
+      {/* Groupe externe : taille du stade (attribut SVG, statique).
+          Groupe interne : animation idle (transform CSS). Les deux sont séparés
+          car un transform CSS écrase l'attribut transform SVG au lieu de s'y
+          composer : les fusionner annulerait la mise à l'échelle par stade. */}
+      <g transform={`translate(60 64) scale(${p.echelle}) translate(-60 -64)`}>
+        <g className={idleClassName}>
+          {/* crête jaune */}
+          {p.crete && (
+            <path
+              d="M60 22 q5 8 0 16 q-5 -8 0 -16 z M52 26 q3 7 0 13 q-4 -7 0 -13 z M68 26 q-3 7 0 13 q4 -7 0 -13 z"
+              fill="#f5df4d"
+              stroke="#e6c93c"
+              strokeWidth={0.8}
             />
-            <circle cx={95.7} cy={76} r={5.5} fill="#3f4654" />
-            <circle cx={95.7} cy={76} r={2.6} fill="#9aa0ad" />
+          )}
+
+          {/* oreilles */}
+          <g fill={`url(#${gCorps})`} stroke="#c85b7e" strokeWidth={1.2}>
+            <ellipse
+              cx={40}
+              cy={36}
+              rx={9}
+              ry={13}
+              transform="rotate(-22 40 36)"
+            />
+            <ellipse
+              cx={80}
+              cy={36}
+              rx={9}
+              ry={13}
+              transform="rotate(22 80 36)"
+            />
           </g>
-        )}
+          <g fill="#ffd777">
+            <ellipse
+              cx={41}
+              cy={35}
+              rx={4}
+              ry={6.5}
+              transform="rotate(-22 41 35)"
+            />
+            <ellipse
+              cx={79}
+              cy={35}
+              rx={4}
+              ry={6.5}
+              transform="rotate(22 79 35)"
+            />
+          </g>
+
+          {/* corps */}
+          <ellipse
+            cx={60}
+            cy={66}
+            rx={36}
+            ry={34}
+            fill={`url(#${gCorps})`}
+            stroke="#c85b7e"
+            strokeWidth={1.4}
+          />
+          {/* ventre */}
+          <ellipse cx={60} cy={74} rx={22} ry={20} fill={`url(#${gVentre})`} />
+
+          {/* pattes */}
+          <g fill="#cf6184">
+            <ellipse cx={48} cy={98} rx={9} ry={6} />
+            <ellipse cx={72} cy={98} rx={9} ry={6} />
+          </g>
+
+          {/* joues */}
+          <circle cx={40} cy={70} r={6} fill={chevron} opacity={0.95} />
+          <circle cx={80} cy={70} r={6} fill={chevron} opacity={0.95} />
+
+          <Yeux expression={expression} />
+          <Bouche expression={expression} />
+
+          {/* goutte de sueur */}
+          {expression === 'fatigue' && (
+            <path
+              d="M86 52 q3 5 0 7 q-3 -2 0 -7 z"
+              fill="#7cc7e0"
+              stroke="#57b0cf"
+              strokeWidth={0.6}
+            />
+          )}
+
+          {/* accessoire : petit micro (éloquence) */}
+          {p.accessoire && (
+            <g transform="rotate(20 96 80)">
+              <rect
+                x={94}
+                y={78}
+                width={3.4}
+                height={16}
+                rx={1.7}
+                fill="#7b8190"
+              />
+              <circle cx={95.7} cy={76} r={5.5} fill="#3f4654" />
+              <circle cx={95.7} cy={76} r={2.6} fill="#9aa0ad" />
+            </g>
+          )}
+        </g>
       </g>
     </svg>
   );
