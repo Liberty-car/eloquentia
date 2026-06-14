@@ -106,7 +106,9 @@ Briques transverses :
   `server/src/generated/prisma` (gitignore, regenere via `npm run db:generate`).
 - Driver adapter OBLIGATOIRE : `PrismaClient` est instancie avec
   `new PrismaPg({ connectionString })` dans `lib/prisma.ts`.
-- `datasource` : `url` (runtime, pooler en prod) + `directUrl` (migrations).
+- URLs de connexion dans `prisma.config.ts` (et non dans le schema) :
+  `datasource.url` = DIRECT_URL pour les migrations ; le runtime se connecte
+  via le driver adapter avec DATABASE_URL (pooler en prod Supabase).
 - Lancer `npm run db:generate` apres tout changement de schema, et avant
   `typecheck`/`build` (le client genere doit exister).
 
