@@ -1,7 +1,7 @@
 # Eloquetia : spec fondations + design system + CRM (premier cycle)
 
 - Date : 2026-06-14
-- Statut : validé en brainstorming, en attente de revue avant plan d'implémentation
+- Statut : fondations et coquille implémentées ; CRM à venir
 - Auteur : Anthony + Claude
 
 ## 1. Contexte et objectif
