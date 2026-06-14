@@ -81,6 +81,8 @@ export function MascottePanel({
     peutNourrir,
     nourrir,
     streak,
+    nom,
+    renommer,
   } = data;
   const entrees = journal.slice(0, 5);
 
@@ -220,6 +222,27 @@ export function MascottePanel({
           {conseil}
         </p>
       )}
+
+      {/* Renommer */}
+      <div className="mt-3 flex flex-col gap-1">
+        <label
+          htmlFor="quetia-nom"
+          className="text-[11px] font-medium text-encre-3"
+        >
+          Nom
+        </label>
+        <input
+          id="quetia-nom"
+          defaultValue={nom}
+          maxLength={20}
+          aria-label="Renommer la mascotte"
+          onBlur={(e) => renommer(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') e.currentTarget.blur();
+          }}
+          className="h-8 rounded-[10px] border border-trait bg-scene px-2 text-sm text-encre focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus/30"
+        />
+      </div>
     </div>
   );
 }

@@ -11,7 +11,14 @@ import { contactsStore } from '../crm/store';
 import { evenementsStore, tachesStore } from '../calendar/store';
 import { mouvementsStore } from '../accounting/store';
 import { campagnesStore } from '../mail/store';
-import { computeFaim, conseil, infoStade, tachesEnRetard } from './compute';
+import {
+  computeFaim,
+  conseil,
+  estNuit,
+  infoStade,
+  messageBulle,
+  tachesEnRetard,
+} from './compute';
 import { BANDES, FAIM_SEUIL_REPAS, NOM } from './config';
 import {
   ecrireMascotte,
@@ -131,6 +138,15 @@ export function MascotteProvider({ children }: { children: ReactNode }) {
     const nom = state.nom ?? NOM;
     // « Quetia adulte » -> « <nom> adulte » si la mascotte a été renommée.
     const stadeNom = info.nom.replace(NOM, nom);
+    const heure = new Date().getHours();
+    const nuit = estNuit(heure);
+    const bulle = messageBulle({
+      nuit,
+      faim,
+      humeurBande: state.humeurBande,
+      streak: state.streak,
+      heure,
+    });
     return {
       nom,
       xp: state.xp,
@@ -151,6 +167,8 @@ export function MascotteProvider({ children }: { children: ReactNode }) {
       nourrir,
       streak: state.streak,
       renommer,
+      nuit,
+      bulle,
     };
   }, [state, reaction, conseilTexte, clearReaction, nourrir, renommer]);
 

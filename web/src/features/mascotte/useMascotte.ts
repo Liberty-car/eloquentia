@@ -24,6 +24,8 @@ export interface MascotteContexte {
   nourrir: () => boolean; // renvoie true si le repas a eu lieu
   streak: number;
   renommer: (nom: string) => void;
+  nuit: boolean; // cycle jour / nuit (heure locale)
+  bulle: string; // phrase contextuelle
 }
 
 export const MascotteContext = createContext<MascotteContexte | null>(null);

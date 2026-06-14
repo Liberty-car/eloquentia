@@ -9,6 +9,7 @@ import {
   conseil,
   diffEvents,
   estNuit,
+  messageBulle,
   penaliteFaim,
   tachesEnRetard,
 } from './compute';
@@ -324,6 +325,29 @@ describe('estNuit', () => {
     expect(estNuit(3)).toBe(true);
     expect(estNuit(7)).toBe(false);
     expect(estNuit(14)).toBe(false);
+  });
+});
+
+describe('messageBulle', () => {
+  const base = {
+    nuit: false,
+    faim: 80,
+    humeurBande: 'serein' as const,
+    streak: 0,
+    heure: 10,
+  };
+  it('dort la nuit', () => {
+    expect(messageBulle({ ...base, nuit: true })).toContain('demain');
+  });
+  it('réclame à manger quand elle a faim', () => {
+    expect(messageBulle({ ...base, faim: 10 })).toContain('creux');
+  });
+  it('salue selon l’heure en journée', () => {
+    expect(messageBulle({ ...base, heure: 9 })).toContain('Bonjour');
+    expect(messageBulle({ ...base, heure: 20 })).toContain('soirée');
+  });
+  it('met en avant une longue série', () => {
+    expect(messageBulle({ ...base, streak: 4 })).toContain("d'affilée");
   });
 });
 

@@ -262,6 +262,29 @@ export function estNuit(heure: number): boolean {
   return heure >= NUIT_DEBUT_HEURE || heure < NUIT_FIN_HEURE;
 }
 
+// --- Bulle de dialogue contextuelle ---
+
+// Phrase courte reflétant l'état du moment (nuit, faim, humeur, série, heure).
+export function messageBulle(p: {
+  nuit: boolean;
+  faim: number;
+  humeurBande: HumeurBande;
+  streak: number;
+  heure: number;
+}): string {
+  if (p.nuit) return 'Zzz... à demain !';
+  if (p.faim < 25) return "J'ai un petit creux...";
+  if (p.humeurBande === 'epuise') {
+    return 'Je suis vidée... un peu de bonnes nouvelles ?';
+  }
+  if (p.humeurBande === 'fatigue') return 'Journée chargée, hein ?';
+  if (p.streak >= 3) return `${p.streak} jours d'affilée, on assure !`;
+  if (p.humeurBande === 'radieux') return 'Quelle belle journée !';
+  if (p.heure < 12) return 'Bonjour ! Au travail ?';
+  if (p.heure < 18) return 'Bel après-midi !';
+  return 'Bonne soirée !';
+}
+
 // --- Diff d'événements : journal + réaction ---
 
 export interface DiffResultat {
