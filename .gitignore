@@ -1,0 +1,44 @@
+# Dépendances
+node_modules/
+.pnp
+.pnp.js
+
+# Variables d'environnement (ne jamais committer les secrets)
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Build / sorties
+dist/
+build/
+*.tsbuildinfo
+
+# Client Prisma généré (régénéré via `npm run db:generate`)
+server/src/generated/
+
+# Tests / couverture
+coverage/
+playwright-report/
+test-results/
+.playwright/
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# Caches outils
+.eslintcache
+.cache/
+.vite/
+
+# OS / éditeurs
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+.vscode/*
+!.vscode/extensions.json
