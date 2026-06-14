@@ -39,6 +39,15 @@ describe('AgendaView', () => {
     expect(screen.getByText('Briefer le jury')).toBeInTheDocument();
     // La tache sans echeance n'apparait pas dans l'agenda.
     expect(screen.queryByText('Tâche sans échéance')).not.toBeInTheDocument();
+    // Ordre chronologique croissant : la tache du 05 avant l'evenement du 12.
+    const textes = screen
+      .getAllByRole('button')
+      .map((b) => b.textContent ?? '');
+    const idxTache = textes.findIndex((t) => t.includes('Briefer le jury'));
+    const idxEvenement = textes.findIndex((t) =>
+      t.includes('Finale Eloquentia'),
+    );
+    expect(idxTache).toBeLessThan(idxEvenement);
     fireEvent.click(screen.getByText('Finale Eloquentia'));
     expect(onSelectEvenement).toHaveBeenCalledWith(evenements[0]);
   });

@@ -1,7 +1,7 @@
 # Eloquetia : spec fondations + design system + CRM (premier cycle)
 
 - Date : 2026-06-14
-- Statut : coquille + CRM complet + Calendrier (vue mois, événements/tâches) implémentés
+- Statut : coquille + CRM complet + module Calendrier complet (mois, agenda, par membre, par statut) implémentés
 - Auteur : Anthony + Claude
 
 ## 1. Contexte et objectif

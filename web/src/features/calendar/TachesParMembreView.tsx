@@ -1,4 +1,5 @@
 import { Badge } from '../../components/ui/Badge';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { MEMBRES, PRIORITE_LABELS, STATUT_LABELS, type Tache } from './types';
 
 export function TachesParMembreView({
@@ -12,6 +13,15 @@ export function TachesParMembreView({
     membre,
     liste: taches.filter((t) => t.membre === membre),
   })).filter((g) => g.liste.length > 0);
+
+  if (groupes.length === 0) {
+    return (
+      <EmptyState
+        title="Aucune tâche"
+        description="Active les données de démo ou crée une tâche."
+      />
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
