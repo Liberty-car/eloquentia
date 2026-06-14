@@ -7,13 +7,8 @@ import {
   YAxis,
 } from 'recharts';
 import { cn } from '../../lib/cn';
-import {
-  BADGES,
-  BADGE_LABELS,
-  ETAPES,
-  ETAPE_LABELS,
-  type Contact,
-} from './types';
+import { tousBadges } from './badges';
+import { ETAPES, ETAPE_LABELS, type Contact } from './types';
 
 function KpiCard({
   label,
@@ -50,9 +45,9 @@ export function CrmDashboardView({ contacts }: { contacts: Contact[] }) {
     nom: ETAPE_LABELS[etape],
     valeur: contacts.filter((c) => c.etape === etape).length,
   }));
-  const parBadge = BADGES.map((badge) => ({
-    nom: BADGE_LABELS[badge],
-    valeur: contacts.filter((c) => c.badges.includes(badge)).length,
+  const parBadge = tousBadges().map((badge) => ({
+    nom: badge.label,
+    valeur: contacts.filter((c) => c.badges.includes(badge.id)).length,
   }));
   const relances = contacts.filter((c) => c.prochaineRelance);
   const enRetard = relances.filter((c) => c.prochaineRelance! < aujourdhui);

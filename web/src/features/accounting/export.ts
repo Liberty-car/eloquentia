@@ -1,4 +1,5 @@
-import { libelleCategorie, TYPE_LABELS, type Mouvement } from './types';
+import { libelleCategorie } from './categories';
+import { TYPE_LABELS, type Mouvement } from './types';
 
 function echapper(valeur: string): string {
   if (/[";\n\r]/.test(valeur)) {

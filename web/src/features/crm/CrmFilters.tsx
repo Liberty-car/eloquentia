@@ -1,21 +1,24 @@
+import { useState } from 'react';
+import { Plus, X } from 'lucide-react';
 import { Input } from '../../components/ui/Input';
 import { cn } from '../../lib/cn';
-import {
-  BADGES,
-  BADGE_LABELS,
-  ETAPES,
-  ETAPE_LABELS,
-  type BadgeId,
-} from './types';
+import { tousBadges } from './badges';
+import { ETAPES, ETAPE_LABELS, type BadgeId } from './types';
 import type { ContactFilters } from './filter';
 
 export function CrmFilters({
   value,
   onChange,
+  onAjouterBadge,
+  onSupprimerBadge,
 }: {
   value: ContactFilters;
   onChange: (filters: ContactFilters) => void;
+  onAjouterBadge: (label: string) => void;
+  onSupprimerBadge: (id: BadgeId) => void;
 }) {
+  const [nouveauBadge, setNouveauBadge] = useState('');
+
   function toggleBadge(badge: BadgeId) {
     onChange({
       ...value,
@@ -23,6 +26,13 @@ export function CrmFilters({
         ? value.badges.filter((b) => b !== badge)
         : [...value.badges, badge],
     });
+  }
+
+  function ajouter() {
+    const label = nouveauBadge.trim();
+    if (label === '') return;
+    onAjouterBadge(label);
+    setNouveauBadge('');
   }
 
   return (
@@ -62,21 +72,59 @@ export function CrmFilters({
           </button>
         ))}
         <span className="mx-1 h-5 w-px bg-trait-fort" aria-hidden="true" />
-        {BADGES.map((badge) => (
+        {tousBadges().map((badge) => {
+          const actif = value.badges.includes(badge.id);
+          return (
+            <span
+              key={badge.id}
+              className={cn(
+                'inline-flex items-center rounded-full border text-xs font-medium transition-colors',
+                actif
+                  ? 'border-gel-rose bg-rose-brume text-velours'
+                  : 'border-trait-fort bg-papier text-encre-2',
+              )}
+            >
+              <button
+                type="button"
+                onClick={() => toggleBadge(badge.id)}
+                className="py-1 pl-3 pr-1.5"
+              >
+                {badge.label}
+              </button>
+              {!badge.protege && (
+                <button
+                  type="button"
+                  onClick={() => onSupprimerBadge(badge.id)}
+                  aria-label={`Supprimer le badge ${badge.label}`}
+                  className="pr-2 pl-0.5 text-encre-3 hover:text-erreur"
+                >
+                  <X size={12} />
+                </button>
+              )}
+            </span>
+          );
+        })}
+        <span className="ml-1 inline-flex items-center gap-1">
+          <input
+            type="text"
+            value={nouveauBadge}
+            onChange={(e) => setNouveauBadge(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') ajouter();
+            }}
+            placeholder="Nouveau badge"
+            aria-label="Nom du nouveau badge"
+            className="h-7 w-32 rounded-full border border-trait bg-scene px-3 text-xs text-encre placeholder:text-encre-4 focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus/30"
+          />
           <button
-            key={badge}
             type="button"
-            onClick={() => toggleBadge(badge)}
-            className={cn(
-              'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
-              value.badges.includes(badge)
-                ? 'border-gel-rose bg-rose-brume text-velours'
-                : 'border-trait-fort bg-papier text-encre-2 hover:bg-scene',
-            )}
+            onClick={ajouter}
+            aria-label="Ajouter le badge"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-trait-fort bg-papier text-encre-2 hover:bg-scene"
           >
-            {BADGE_LABELS[badge]}
+            <Plus size={14} />
           </button>
-        ))}
+        </span>
       </div>
     </div>
   );

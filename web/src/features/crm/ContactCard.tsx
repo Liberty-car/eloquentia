@@ -1,7 +1,8 @@
 import { Avatar } from '../../components/ui/Avatar';
 import { Badge } from '../../components/ui/Badge';
 import { Card } from '../../components/ui/Card';
-import { BADGE_LABELS, BADGE_TONE, type Contact } from './types';
+import { libelleBadge, toneBadge } from './badges';
+import { type Contact } from './types';
 
 function initiales(contact: Contact): string {
   return `${contact.prenom.charAt(0)}${contact.nom.charAt(0)}`.toUpperCase();
@@ -40,8 +41,8 @@ export function ContactCard({
       {contact.badges.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {contact.badges.map((b) => (
-            <Badge key={b} tone={BADGE_TONE[b]}>
-              {BADGE_LABELS[b]}
+            <Badge key={b} tone={toneBadge(b)}>
+              {libelleBadge(b)}
             </Badge>
           ))}
         </div>

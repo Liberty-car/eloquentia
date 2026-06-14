@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
+import { Plus, X } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { SidePanel } from '../../components/ui/SidePanel';
 import { cn } from '../../lib/cn';
+import { categoriesPour } from './categories';
 import {
-  CATEGORIE_LABELS,
-  categoriesPour,
   TYPES_MOUVEMENT,
   TYPE_LABELS,
   type Mouvement,
@@ -46,6 +46,8 @@ export function MouvementFiche({
   onClose,
   onSave,
   onDelete,
+  onAjouterCategorie,
+  onSupprimerCategorie,
 }: {
   open: boolean;
   mouvement: Mouvement | null;
@@ -56,10 +58,13 @@ export function MouvementFiche({
   onClose: () => void;
   onSave: (values: MouvementFormValues) => void;
   onDelete: () => void;
+  onAjouterCategorie: (label: string, type: TypeMouvement) => void;
+  onSupprimerCategorie: (id: string) => void;
 }) {
   const [values, setValues] = useState<MouvementFormValues>(
     valeurs(mouvement, dateInitiale, evenementInitial, previsionnelInitial),
   );
+  const [nouvelleCategorie, setNouvelleCategorie] = useState('');
 
   useEffect(() => {
     setValues(
@@ -77,11 +82,26 @@ export function MouvementFiche({
   function changerType(type: TypeMouvement) {
     setValues((prev) => {
       const categories = categoriesPour(type);
-      const categorie = categories.includes(prev.categorie)
+      const categorie = categories.some((c) => c.id === prev.categorie)
         ? prev.categorie
-        : (categories[0] as string);
+        : (categories[0]?.id ?? '');
       return { ...prev, type, categorie };
     });
+  }
+
+  function ajouterCategorieLocale() {
+    const label = nouvelleCategorie.trim();
+    if (label === '') return;
+    onAjouterCategorie(label, values.type);
+    setNouvelleCategorie('');
+  }
+
+  function supprimerCategorieLocale(id: string) {
+    onSupprimerCategorie(id);
+    if (values.categorie === id) {
+      const reste = categoriesPour(values.type).filter((c) => c.id !== id);
+      set('categorie', reste[0]?.id ?? '');
+    }
   }
 
   const categories = categoriesPour(values.type);
@@ -130,22 +150,63 @@ export function MouvementFiche({
 
         <div className="flex flex-col gap-1.5">
           <span className="text-xs font-medium text-encre-3">Catégorie</span>
-          <div className="flex flex-wrap gap-1.5">
-            {categories.map((categorie) => (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {categories.map((categorie) => {
+              const actif = values.categorie === categorie.id;
+              return (
+                <span
+                  key={categorie.id}
+                  className={cn(
+                    'inline-flex items-center rounded-full border text-xs font-medium transition-colors',
+                    actif
+                      ? 'border-gel-rose bg-rose-brume text-velours'
+                      : 'border-trait-fort bg-papier text-encre-2',
+                  )}
+                >
+                  <button
+                    type="button"
+                    onClick={() => set('categorie', categorie.id)}
+                    className="py-1 pl-3 pr-1.5"
+                  >
+                    {categorie.label}
+                  </button>
+                  {!categorie.protege && (
+                    <button
+                      type="button"
+                      onClick={() => supprimerCategorieLocale(categorie.id)}
+                      aria-label={`Supprimer la catégorie ${categorie.label}`}
+                      className="pl-0.5 pr-2 text-encre-3 hover:text-erreur"
+                    >
+                      <X size={12} />
+                    </button>
+                  )}
+                </span>
+              );
+            })}
+            <span className="inline-flex items-center gap-1">
+              <input
+                type="text"
+                value={nouvelleCategorie}
+                onChange={(e) => setNouvelleCategorie(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    ajouterCategorieLocale();
+                  }
+                }}
+                placeholder="Nouvelle catégorie"
+                aria-label="Nom de la nouvelle catégorie"
+                className="h-7 w-36 rounded-full border border-trait bg-scene px-3 text-xs text-encre placeholder:text-encre-4 focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus/30"
+              />
               <button
-                key={categorie}
                 type="button"
-                onClick={() => set('categorie', categorie)}
-                className={cn(
-                  'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
-                  values.categorie === categorie
-                    ? 'border-gel-rose bg-rose-brume text-velours'
-                    : 'border-trait-fort bg-papier text-encre-2 hover:bg-scene',
-                )}
+                onClick={ajouterCategorieLocale}
+                aria-label="Ajouter la catégorie"
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-trait-fort bg-papier text-encre-2 hover:bg-scene"
               >
-                {CATEGORIE_LABELS[categorie]}
+                <Plus size={14} />
               </button>
-            ))}
+            </span>
           </div>
         </div>
 

@@ -14,8 +14,9 @@ import { GroupedByBadgeView } from './GroupedByBadgeView';
 import { RelancesView } from './RelancesView';
 import { CrmDashboardView } from './CrmDashboardView';
 import { filterContacts, type ContactFilters } from './filter';
+import { ajouterBadge, supprimerBadge } from './badges';
 import type { Vue } from './views';
-import type { Contact, ContactFormValues, Etape } from './types';
+import type { BadgeId, Contact, ContactFormValues, Etape } from './types';
 import { ContactImport } from './ContactImport';
 import type { ImportRow } from './import';
 
@@ -129,6 +130,25 @@ export default function CrmPage() {
     rafraichir();
   }
 
+  function gererAjoutBadge(label: string) {
+    ajouterBadge(label);
+    rafraichir();
+  }
+
+  async function gererSuppressionBadge(id: BadgeId) {
+    if (!supprimerBadge(id)) return;
+    // Retirer le badge des contacts qui le portaient.
+    const concernes = contacts.filter((c) => c.badges.includes(id));
+    for (const c of concernes) {
+      await contactsStore.update(c.id, {
+        badges: c.badges.filter((b) => b !== id),
+      });
+    }
+    // Retirer aussi le badge du filtre actif s'il y figurait.
+    setFiltres((f) => ({ ...f, badges: f.badges.filter((b) => b !== id) }));
+    rafraichir();
+  }
+
   async function importer(rows: ImportRow[]) {
     for (const row of rows) {
       await contactsStore.create({
@@ -220,7 +240,14 @@ export default function CrmPage() {
         <CrmViewSwitcher value={vue} onChange={setVue} />
       </div>
 
-      {!tableau && <CrmFilters value={filtres} onChange={setFiltres} />}
+      {!tableau && (
+        <CrmFilters
+          value={filtres}
+          onChange={setFiltres}
+          onAjouterBadge={gererAjoutBadge}
+          onSupprimerBadge={gererSuppressionBadge}
+        />
+      )}
 
       {aucunContact ? (
         <EmptyState

@@ -11,14 +11,8 @@ import {
 import { Avatar } from '../../components/ui/Avatar';
 import { Badge } from '../../components/ui/Badge';
 import { cn } from '../../lib/cn';
-import {
-  BADGE_LABELS,
-  BADGE_TONE,
-  ETAPES,
-  ETAPE_LABELS,
-  type Contact,
-  type Etape,
-} from './types';
+import { libelleBadge, toneBadge } from './badges';
+import { ETAPES, ETAPE_LABELS, type Contact, type Etape } from './types';
 
 function initiales(contact: Contact): string {
   return `${contact.prenom.charAt(0)}${contact.nom.charAt(0)}`.toUpperCase();
@@ -82,8 +76,8 @@ function KanbanCard({
       {contact.badges.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1">
           {contact.badges.map((b) => (
-            <Badge key={b} tone={BADGE_TONE[b]}>
-              {BADGE_LABELS[b]}
+            <Badge key={b} tone={toneBadge(b)}>
+              {libelleBadge(b)}
             </Badge>
           ))}
         </div>

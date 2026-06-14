@@ -12,7 +12,8 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { cn } from '../../lib/cn';
 import { formatEuros } from './format';
 import { projectionMensuelle, totaux } from './aggregate';
-import { libelleCategorie, TYPE_LABELS, type Mouvement } from './types';
+import { libelleCategorie } from './categories';
+import { TYPE_LABELS, type Mouvement } from './types';
 
 const FIN_PROJECTION = '2028-07';
 

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { seedContacts } from './seed';
-import { BADGES, ETAPES } from './types';
+import { ETAPES } from './types';
+import { tousBadges } from './badges';
 
 describe('seedContacts', () => {
   const contacts = seedContacts();
@@ -24,11 +25,12 @@ describe('seedContacts', () => {
   });
 
   it("n'utilise que des badges et des étapes valides", () => {
+    const idsBadges = tousBadges().map((b) => b.id);
     for (const c of contacts) {
       expect(ETAPES).toContain(c.etape);
       expect(c.badges.length).toBeGreaterThan(0);
       for (const b of c.badges) {
-        expect(BADGES).toContain(b);
+        expect(idsBadges).toContain(b);
       }
     }
   });

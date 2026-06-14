@@ -1,5 +1,6 @@
 import { ContactCard } from './ContactCard';
-import { BADGES, BADGE_LABELS, type Contact } from './types';
+import { tousBadges } from './badges';
+import { type Contact } from './types';
 
 export function GroupedByBadgeView({
   contacts,
@@ -8,17 +9,19 @@ export function GroupedByBadgeView({
   contacts: Contact[];
   onSelect: (contact: Contact) => void;
 }) {
-  const groupes = BADGES.map((badge) => ({
-    badge,
-    liste: contacts.filter((c) => c.badges.includes(badge)),
-  })).filter((g) => g.liste.length > 0);
+  const groupes = tousBadges()
+    .map((badge) => ({
+      badge,
+      liste: contacts.filter((c) => c.badges.includes(badge.id)),
+    }))
+    .filter((g) => g.liste.length > 0);
 
   return (
     <div className="flex flex-col gap-6">
       {groupes.map(({ badge, liste }) => (
-        <section key={badge}>
+        <section key={badge.id}>
           <h2 className="mb-3 flex items-center gap-2 text-sm font-bold text-encre">
-            {BADGE_LABELS[badge]}
+            {badge.label}
             <span className="rounded-full bg-scene px-2 text-xs font-medium text-encre-3">
               {liste.length}
             </span>

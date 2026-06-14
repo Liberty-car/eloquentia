@@ -8,41 +8,8 @@ export const TYPE_LABELS: Record<TypeMouvement, string> = {
   depense: 'Dépense',
 };
 
-export const CATEGORIES_REVENU = [
-  'dons',
-  'subventions',
-  'sponsoring',
-  'billetterie',
-  'autre',
-] as const;
-
-export const CATEGORIES_DEPENSE = [
-  'logistique',
-  'communication',
-  'materiel',
-  'restauration',
-  'autre',
-] as const;
-
-export const CATEGORIE_LABELS: Record<string, string> = {
-  dons: 'Dons',
-  subventions: 'Subventions',
-  sponsoring: 'Sponsoring',
-  billetterie: 'Billetterie',
-  logistique: 'Logistique',
-  communication: 'Communication',
-  materiel: 'Matériel',
-  restauration: 'Restauration',
-  autre: 'Autre',
-};
-
-export function categoriesPour(type: TypeMouvement): readonly string[] {
-  return type === 'revenu' ? CATEGORIES_REVENU : CATEGORIES_DEPENSE;
-}
-
-export function libelleCategorie(categorie: string): string {
-  return CATEGORIE_LABELS[categorie] ?? categorie;
-}
+// Les catégories sont une taxonomie dynamique gérée dans categories.ts :
+// categoriesPour(type), libelleCategorie(id), toutesCategories(), ajouter/supprimer.
 
 export interface Mouvement {
   id: string;

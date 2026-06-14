@@ -1,10 +1,10 @@
 import { Badge } from '../../components/ui/Badge';
 import { EmptyState } from '../../components/ui/EmptyState';
-import { BADGE_LABELS } from '../crm/types';
+import { libelleBadge } from '../crm/badges';
 import type { Campagne, SegmentBadge } from './types';
 
 function labelSegment(segment: SegmentBadge): string {
-  return segment === 'tous' ? 'Tous les contacts' : BADGE_LABELS[segment];
+  return segment === 'tous' ? 'Tous les contacts' : libelleBadge(segment);
 }
 
 function formatDateCourte(iso: string): string {

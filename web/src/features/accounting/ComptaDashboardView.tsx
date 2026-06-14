@@ -10,12 +10,8 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { cn } from '../../lib/cn';
 import { formatEuros } from './format';
 import { totaux } from './aggregate';
-import {
-  CATEGORIES_DEPENSE,
-  CATEGORIES_REVENU,
-  CATEGORIE_LABELS,
-  type Mouvement,
-} from './types';
+import { categoriesPour, type CategorieDef } from './categories';
+import { type Mouvement } from './types';
 
 function KpiCard({
   label,
@@ -48,12 +44,12 @@ function KpiCard({
 
 function parCategorie(
   mouvements: Mouvement[],
-  categories: readonly string[],
+  categories: CategorieDef[],
 ): { nom: string; valeur: number }[] {
   return categories.map((cat) => ({
-    nom: CATEGORIE_LABELS[cat] ?? cat,
+    nom: cat.label,
     valeur: mouvements
-      .filter((m) => m.categorie === cat)
+      .filter((m) => m.categorie === cat.id)
       .reduce((s, m) => s + m.montant, 0),
   }));
 }
@@ -77,8 +73,8 @@ export function ComptaDashboardView({
   const t = totaux(reel);
   const revenusReels = reel.filter((m) => m.type === 'revenu');
   const depensesReelles = reel.filter((m) => m.type === 'depense');
-  const dataRevenus = parCategorie(revenusReels, CATEGORIES_REVENU);
-  const dataDepenses = parCategorie(depensesReelles, CATEGORIES_DEPENSE);
+  const dataRevenus = parCategorie(revenusReels, categoriesPour('revenu'));
+  const dataDepenses = parCategorie(depensesReelles, categoriesPour('depense'));
 
   return (
     <div className="flex flex-col gap-6">

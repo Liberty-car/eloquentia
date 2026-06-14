@@ -4,7 +4,8 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { cn } from '../../lib/cn';
 import { formatEuros } from './format';
 import { totaux } from './aggregate';
-import { libelleCategorie, type Mouvement } from './types';
+import { libelleCategorie } from './categories';
+import { type Mouvement } from './types';
 
 function formatDateCourte(iso: string): string {
   const [a, m, j] = iso.split('-');

@@ -3,11 +3,11 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { SidePanel } from '../../components/ui/SidePanel';
 import { cn } from '../../lib/cn';
+import { tousBadges } from './badges';
 import {
-  BADGES,
-  BADGE_LABELS,
   ETAPES,
   ETAPE_LABELS,
+  type BadgeId,
   type Contact,
   type ContactFormValues,
 } from './types';
@@ -54,7 +54,7 @@ export function ContactFiche({
     setValues((prev) => ({ ...prev, [key]: value }));
   }
 
-  function toggleBadge(badge: (typeof BADGES)[number]) {
+  function toggleBadge(badge: BadgeId) {
     setValues((prev) => ({
       ...prev,
       badges: prev.badges.includes(badge)
@@ -128,19 +128,19 @@ export function ContactFiche({
         <div className="flex flex-col gap-1.5">
           <span className="text-xs font-medium text-encre-3">Badges</span>
           <div className="flex flex-wrap gap-1.5">
-            {BADGES.map((badge) => (
+            {tousBadges().map((badge) => (
               <button
-                key={badge}
+                key={badge.id}
                 type="button"
-                onClick={() => toggleBadge(badge)}
+                onClick={() => toggleBadge(badge.id)}
                 className={cn(
                   'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
-                  values.badges.includes(badge)
+                  values.badges.includes(badge.id)
                     ? 'border-gel-rose bg-rose-brume text-velours'
                     : 'border-trait-fort bg-papier text-encre-2 hover:bg-scene',
                 )}
               >
-                {BADGE_LABELS[badge]}
+                {badge.label}
               </button>
             ))}
           </div>

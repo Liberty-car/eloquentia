@@ -9,6 +9,8 @@ describe('CrmFilters', () => {
       <CrmFilters
         value={{ recherche: '', badges: [], etape: 'toutes' }}
         onChange={onChange}
+        onAjouterBadge={() => {}}
+        onSupprimerBadge={() => {}}
       />,
     );
     fireEvent.change(screen.getByPlaceholderText('Rechercher un contact...'), {

@@ -13,7 +13,13 @@ import { MouvementFiche } from './MouvementFiche';
 import { BudgetEvenementPanel } from './BudgetEvenementPanel';
 import { filterMouvements, type ComptaFiltres } from './filter';
 import { mouvementsVersCsv, telechargerCsv } from './export';
-import type { Mouvement, MouvementFormValues } from './types';
+import {
+  ajouterCategorie,
+  categorieParDefaut,
+  supprimerCategorie,
+  toutesCategories,
+} from './categories';
+import type { Mouvement, MouvementFormValues, TypeMouvement } from './types';
 import type { VueCompta } from './views';
 
 // Option d'événement enrichie de la date (pour le panneau budget).
@@ -142,6 +148,26 @@ export default function AccountingPage() {
     telechargerCsv('comptabilite-eloquetia.csv', mouvementsVersCsv(mouvements));
   }
 
+  function gererAjoutCategorie(label: string, type: TypeMouvement) {
+    ajouterCategorie(label, type);
+    rafraichir();
+  }
+
+  async function gererSuppressionCategorie(id: string) {
+    const cible = toutesCategories().find((c) => c.id === id);
+    if (!supprimerCategorie(id)) return;
+    // Réaffecter les mouvements de cette catégorie vers « Autre » du même type.
+    if (cible) {
+      const defaut = categorieParDefaut(cible.type);
+      const concernes = mouvements.filter((m) => m.categorie === id);
+      for (const m of concernes) {
+        await mouvementsStore.update(m.id, { categorie: defaut });
+      }
+    }
+    setFiltres((f) => (f.categorie === id ? { ...f, categorie: 'toutes' } : f));
+    rafraichir();
+  }
+
   const filtres_appliques = useMemo(
     () => filterMouvements(mouvements, filtres),
     [mouvements, filtres],
@@ -240,6 +266,8 @@ export default function AccountingPage() {
         onClose={() => fermerFiche()}
         onSave={enregistrer}
         onDelete={supprimer}
+        onAjouterCategorie={gererAjoutCategorie}
+        onSupprimerCategorie={gererSuppressionCategorie}
       />
     </>
   );

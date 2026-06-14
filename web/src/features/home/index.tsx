@@ -15,7 +15,8 @@ import { contactsStore } from '../crm/store';
 import { evenementsStore, tachesStore } from '../calendar/store';
 import { mouvementsStore } from '../accounting/store';
 import { campagnesStore } from '../mail/store';
-import { BADGE_LABELS, BADGE_TONE, type Contact } from '../crm/types';
+import { libelleBadge, toneBadge } from '../crm/badges';
+import { type Contact } from '../crm/types';
 import type { Evenement, Tache } from '../calendar/types';
 import {
   chargeParMembre,
@@ -239,8 +240,8 @@ export default function HomePage() {
                     )}
                   </span>
                   {c.badges[0] && (
-                    <Badge tone={BADGE_TONE[c.badges[0]]}>
-                      {BADGE_LABELS[c.badges[0]]}
+                    <Badge tone={toneBadge(c.badges[0])}>
+                      {libelleBadge(c.badges[0])}
                     </Badge>
                   )}
                 </li>

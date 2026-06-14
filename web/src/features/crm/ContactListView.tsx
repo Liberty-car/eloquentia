@@ -1,5 +1,6 @@
 import { Badge } from '../../components/ui/Badge';
-import { BADGE_LABELS, BADGE_TONE, ETAPE_LABELS, type Contact } from './types';
+import { libelleBadge, toneBadge } from './badges';
+import { ETAPE_LABELS, type Contact } from './types';
 
 function formatDate(iso?: string): string {
   if (!iso) return '-';
@@ -41,8 +42,8 @@ export function ContactListView({
               <td className="px-4 py-3">
                 <div className="flex flex-wrap gap-1.5">
                   {contact.badges.map((b) => (
-                    <Badge key={b} tone={BADGE_TONE[b]}>
-                      {BADGE_LABELS[b]}
+                    <Badge key={b} tone={toneBadge(b)}>
+                      {libelleBadge(b)}
                     </Badge>
                   ))}
                 </div>

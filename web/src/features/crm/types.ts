@@ -17,34 +17,10 @@ export const ETAPE_LABELS: Record<Etape, string> = {
   perdu: 'Perdu',
 };
 
-export const BADGES = [
-  'partenaire',
-  'jury',
-  'participant',
-  'benevole',
-  'intervenant',
-  'lead',
-] as const;
-export type BadgeId = (typeof BADGES)[number];
-
-export const BADGE_LABELS: Record<BadgeId, string> = {
-  partenaire: 'Partenaire',
-  jury: 'Jury',
-  participant: 'Participant',
-  benevole: 'Bénévole',
-  intervenant: 'Intervenant',
-  lead: 'Lead',
-};
-
-// Tonalite visuelle de chaque badge (parmi les tons du composant Badge).
-export const BADGE_TONE: Record<BadgeId, 'rose' | 'jaune' | 'neutre'> = {
-  partenaire: 'rose',
-  jury: 'jaune',
-  participant: 'neutre',
-  benevole: 'rose',
-  intervenant: 'jaune',
-  lead: 'rose',
-};
+// Les badges (catégories de contacts) sont une taxonomie dynamique gérée dans
+// badges.ts : libelleBadge(id), toneBadge(id), tousBadges(), ajouter/supprimer.
+// Un badge est identifié par une chaîne (id).
+export type BadgeId = string;
 
 export type Source = 'manuel' | 'import' | 'formulaire';
 

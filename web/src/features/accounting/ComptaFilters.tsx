@@ -1,9 +1,9 @@
-import { CATEGORIE_LABELS, TYPES_MOUVEMENT, TYPE_LABELS } from './types';
+import { TYPES_MOUVEMENT, TYPE_LABELS } from './types';
+import { toutesCategories } from './categories';
 import type { ComptaFiltres, NatureFiltre } from './filter';
 import { cn } from '../../lib/cn';
 
 const TYPE_OPTIONS = ['tous', ...TYPES_MOUVEMENT] as const;
-const CATEGORIES = Object.keys(CATEGORIE_LABELS);
 
 const NATURE_OPTIONS: { id: NatureFiltre; label: string }[] = [
   { id: 'toutes', label: 'Tout' },
@@ -80,9 +80,9 @@ export function ComptaFilters({
         className="h-9 rounded-[10px] border border-trait bg-scene px-3 text-sm text-encre focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus/30"
       >
         <option value="toutes">Toutes les catégories</option>
-        {CATEGORIES.map((c) => (
-          <option key={c} value={c}>
-            {CATEGORIE_LABELS[c]}
+        {toutesCategories().map((c) => (
+          <option key={c.id} value={c.id}>
+            {c.label}
           </option>
         ))}
       </select>

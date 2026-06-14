@@ -2,14 +2,13 @@ import { useState } from 'react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { cn } from '../../lib/cn';
-import { BADGES, BADGE_LABELS, type Contact } from '../crm/types';
+import { libelleBadge, tousBadges } from '../crm/badges';
+import { type Contact } from '../crm/types';
 import { compterDestinataires } from './recipients';
 import type { ComposerValues, SegmentBadge } from './types';
 
-const SEGMENTS: SegmentBadge[] = ['tous', ...BADGES];
-
 function labelSegment(segment: SegmentBadge): string {
-  return segment === 'tous' ? 'Tous' : BADGE_LABELS[segment];
+  return segment === 'tous' ? 'Tous' : libelleBadge(segment);
 }
 
 export function ComposerView({
@@ -23,6 +22,7 @@ export function ComposerView({
   const [sujet, setSujet] = useState('');
   const [corps, setCorps] = useState('');
 
+  const segments: SegmentBadge[] = ['tous', ...tousBadges().map((b) => b.id)];
   const nbDestinataires = compterDestinataires(contacts, segment);
   const peutEnvoyer = sujet.trim() !== '' && nbDestinataires > 0;
 
@@ -36,7 +36,7 @@ export function ComposerView({
       <div className="flex flex-col gap-1.5">
         <span className="text-xs font-medium text-encre-3">Segment</span>
         <div className="flex flex-wrap gap-1.5">
-          {SEGMENTS.map((s) => (
+          {segments.map((s) => (
             <button
               key={s}
               type="button"
