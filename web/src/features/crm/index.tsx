@@ -57,25 +57,41 @@ export default function CrmPage() {
   }
 
   async function enregistrer(values: ContactFormValues) {
-    const champs = {
+    // Champs requis (toujours presents).
+    const requis = {
       prenom: values.prenom.trim(),
       nom: values.nom.trim(),
-      organisation: vide(values.organisation),
-      fonction: vide(values.fonction),
-      email: vide(values.email),
-      telephone: vide(values.telephone),
       etape: values.etape,
       badges: values.badges,
-      notes: vide(values.notes),
     };
+    // Champs optionnels : inclus uniquement quand non vides (exactOptionalPropertyTypes).
+    const opts: Partial<
+      Pick<
+        Contact,
+        'organisation' | 'fonction' | 'email' | 'telephone' | 'notes'
+      >
+    > = {};
+    const org = vide(values.organisation);
+    if (org !== undefined) opts.organisation = org;
+    const fn = vide(values.fonction);
+    if (fn !== undefined) opts.fonction = fn;
+    const em = vide(values.email);
+    if (em !== undefined) opts.email = em;
+    const tel = vide(values.telephone);
+    if (tel !== undefined) opts.telephone = tel;
+    const nt = vide(values.notes);
+    if (nt !== undefined) opts.notes = nt;
+
     if (contactEdite) {
       await contactsStore.update(contactEdite.id, {
-        ...champs,
+        ...requis,
+        ...opts,
         dateDerniereInteraction: aujourdhui(),
       });
     } else {
       await contactsStore.create({
-        ...champs,
+        ...requis,
+        ...opts,
         source: 'manuel',
         dateCreation: aujourdhui(),
         dateDerniereInteraction: aujourdhui(),

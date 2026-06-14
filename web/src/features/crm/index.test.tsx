@@ -20,7 +20,7 @@ describe('CrmPage', () => {
     render(<CrmPage />);
     // A l'etat vide, le bouton apparait dans l'en-tete ET dans l'EmptyState : on prend le premier.
     fireEvent.click(
-      screen.getAllByRole('button', { name: 'Nouveau contact' })[0],
+      screen.getAllByRole('button', { name: 'Nouveau contact' })[0]!,
     );
     expect(
       await screen.findByText('Nouveau contact', { selector: 'h2' }),
