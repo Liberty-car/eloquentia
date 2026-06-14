@@ -1,0 +1,156 @@
+import { useEffect, useState } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { cn } from '../../lib/cn';
+import { FxOverlay, Zzz } from './Fx';
+import { MascottePanel } from './MascottePanel';
+import { QuetiaSprite } from './QuetiaSprite';
+import {
+  expressionBande,
+  fxPourReaction,
+  rythmeIdle,
+  type FxKind,
+} from './sprites';
+import { useMascotte } from './useMascotte';
+
+interface FxActif {
+  id: string;
+  kind: FxKind;
+  texte: string;
+  positif: boolean;
+  levelup: boolean;
+}
+
+const CONFETTIS = [
+  { dx: -28, dy: -34, color: '#db6a8f' },
+  { dx: -12, dy: -44, color: '#f5df4d' },
+  { dx: 8, dy: -40, color: '#ffd777' },
+  { dx: 26, dy: -32, color: '#ca3c66' },
+  { dx: -22, dy: -18, color: '#f08aa6' },
+  { dx: 22, dy: -16, color: '#f5df4d' },
+];
+
+export function Mascotte() {
+  const m = useMascotte();
+  const reduced = useReducedMotion() ?? false;
+  const [panelOuvert, setPanelOuvert] = useState(false);
+  const [fx, setFx] = useState<FxActif | null>(null);
+
+  const reactionId = m?.reaction?.id;
+  useEffect(() => {
+    if (!m?.reaction) return;
+    const r = m.reaction;
+    setFx({
+      id: r.id,
+      kind: fxPourReaction(r.type),
+      texte: r.texte,
+      positif: r.positif,
+      levelup: r.type === 'levelup',
+    });
+    const duree = r.type === 'levelup' ? 2400 : 1700;
+    const t = setTimeout(() => {
+      setFx(null);
+      m.clearReaction();
+    }, duree);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reactionId]);
+
+  if (!m) return null;
+
+  const expression = expressionBande(m.humeurBande);
+  const rythme = reduced ? '' : rythmeIdle(m.humeurBande);
+
+  return (
+    <div className="pointer-events-none fixed bottom-4 left-4 z-40 flex flex-col items-start gap-3">
+      <AnimatePresence>
+        {panelOuvert && (
+          <motion.div
+            key="panel"
+            className="pointer-events-auto"
+            initial={
+              reduced ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.96 }
+            }
+            animate={reduced ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+            exit={reduced ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.96 }}
+            transition={{ duration: 0.2 }}
+          >
+            <MascottePanel data={m} onClose={() => setPanelOuvert(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Bandeau de passage de stade */}
+      <AnimatePresence>
+        {fx?.levelup && (
+          <motion.div
+            key="banner"
+            className="pointer-events-none rounded-full border-2 border-projecteur bg-jaune-brume px-3 py-1 text-xs font-bold text-encre shadow"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+          >
+            {m.nom} évolue !
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <button
+        type="button"
+        onClick={() => setPanelOuvert((o) => !o)}
+        aria-label={`${m.stadeNom}, humeur ${m.bandeLabel}. Ouvrir le détail de ${m.nom}.`}
+        aria-expanded={panelOuvert}
+        className="pointer-events-auto relative grid h-20 w-20 place-items-center rounded-full border-2 border-projecteur bg-papier shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      >
+        <div className="relative h-16 w-16">
+          <QuetiaSprite
+            stade={m.stade}
+            expression={expression}
+            idleClassName={rythme}
+            className="h-full w-full"
+          />
+          {m.humeurBande === 'epuise' && !reduced && <Zzz />}
+
+          <AnimatePresence>
+            {fx && (
+              <motion.div
+                key={fx.id}
+                className="pointer-events-none absolute inset-0"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                {fx.kind !== 'levelup' && <FxOverlay kind={fx.kind} />}
+
+                {fx.levelup &&
+                  !reduced &&
+                  CONFETTIS.map((c, i) => (
+                    <motion.span
+                      key={i}
+                      className="absolute left-1/2 top-1/2 h-1.5 w-1.5 rounded-[1px]"
+                      style={{ backgroundColor: c.color }}
+                      initial={{ x: 0, y: 0, opacity: 1 }}
+                      animate={{ x: c.dx, y: c.dy, opacity: 0 }}
+                      transition={{ duration: 1.1, ease: 'easeOut' }}
+                    />
+                  ))}
+
+                <motion.span
+                  className={cn(
+                    'absolute left-1/2 top-0 -translate-x-1/2 text-xs font-extrabold tabular-nums',
+                    fx.positif ? 'text-velours' : 'text-erreur',
+                  )}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={reduced ? { opacity: 1 } : { opacity: 1, y: -22 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: reduced ? 0.2 : 1.3 }}
+                >
+                  {fx.texte}
+                </motion.span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </button>
+    </div>
+  );
+}
