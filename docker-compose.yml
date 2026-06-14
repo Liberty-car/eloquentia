@@ -1,0 +1,22 @@
+# Optionnel : PostgreSQL local via Docker (alternative a Postgres Homebrew).
+# Necessite Docker installe. Demarrage : docker compose up -d
+# Ensuite, dans server/.env :
+#   DATABASE_URL=postgresql://postgres:postgres@localhost:5432/eloquentia?schema=public
+#   DIRECT_URL=postgresql://postgres:postgres@localhost:5432/eloquentia?schema=public
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: eloquentia-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: eloquentia
+    ports:
+      - '5432:5432'
+    volumes:
+      - eloquentia_pgdata:/var/lib/postgresql/data
+
+volumes:
+  eloquentia_pgdata:
