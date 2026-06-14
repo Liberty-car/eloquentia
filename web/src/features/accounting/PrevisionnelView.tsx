@@ -42,7 +42,13 @@ function KpiCard({
   );
 }
 
-export function PrevisionnelView({ mouvements }: { mouvements: Mouvement[] }) {
+export function PrevisionnelView({
+  mouvements,
+  onSelect,
+}: {
+  mouvements: Mouvement[];
+  onSelect: (mouvement: Mouvement) => void;
+}) {
   const previsionnels = mouvements.filter((m) => m.previsionnel);
 
   if (previsionnels.length === 0) {
@@ -141,28 +147,31 @@ export function PrevisionnelView({ mouvements }: { mouvements: Mouvement[] }) {
               </div>
               <ul className="flex flex-col gap-1.5">
                 {liste.map((m) => (
-                  <li
-                    key={m.id}
-                    className="flex items-center justify-between gap-3 text-sm"
-                  >
-                    <span className="flex items-center gap-2">
-                      <span className="text-encre">{m.libelle}</span>
-                      <Badge tone="neutre">
-                        {libelleCategorie(m.categorie)}
-                      </Badge>
-                    </span>
-                    <span
-                      className={cn(
-                        'whitespace-nowrap font-medium tabular-nums',
-                        m.type === 'revenu' ? 'text-succes' : 'text-erreur',
-                      )}
+                  <li key={m.id}>
+                    <button
+                      type="button"
+                      onClick={() => onSelect(m)}
+                      className="flex w-full items-center justify-between gap-3 rounded-[10px] px-2 py-1.5 text-left text-sm transition-colors hover:bg-scene"
                     >
-                      {m.type === 'revenu' ? '+' : '-'}
-                      {formatEuros(m.montant)}
-                      <span className="ml-1 text-xs text-encre-3">
-                        {TYPE_LABELS[m.type]}
+                      <span className="flex items-center gap-2">
+                        <span className="text-encre">{m.libelle}</span>
+                        <Badge tone="neutre">
+                          {libelleCategorie(m.categorie)}
+                        </Badge>
                       </span>
-                    </span>
+                      <span
+                        className={cn(
+                          'whitespace-nowrap font-medium tabular-nums',
+                          m.type === 'revenu' ? 'text-succes' : 'text-erreur',
+                        )}
+                      >
+                        {m.type === 'revenu' ? '+' : '-'}
+                        {formatEuros(m.montant)}
+                        <span className="ml-1 text-xs text-encre-3">
+                          {TYPE_LABELS[m.type]}
+                        </span>
+                      </span>
+                    </button>
                   </li>
                 ))}
               </ul>

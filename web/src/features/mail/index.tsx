@@ -8,6 +8,7 @@ import { MailViewSwitcher } from './MailViewSwitcher';
 import { ComposerView } from './ComposerView';
 import { LeadCaptureView } from './LeadCaptureView';
 import { HistoriqueView } from './HistoriqueView';
+import { CampagneFiche } from './CampagneFiche';
 import type { Campagne, ComposerValues, LeadFormValues } from './types';
 import type { VueMail } from './views';
 import type { Contact } from '../crm/types';
@@ -20,6 +21,10 @@ export default function MailPage() {
   const [campagnes, setCampagnes] = useState<Campagne[]>([]);
   const [demo, setDemo] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [fiche, setFiche] = useState<{
+    open: boolean;
+    campagne: Campagne | null;
+  }>({ open: false, campagne: null });
 
   const rafraichir = useCallback(() => {
     void contactsStore.list().then(setContacts);
@@ -72,6 +77,28 @@ export default function MailPage() {
     setVue('historique');
   }
 
+  async function modifierCampagne(values: ComposerValues) {
+    if (!fiche.campagne) return;
+    const destinataires = compterDestinataires(contacts, values.segment);
+    await campagnesStore.replace(fiche.campagne.id, {
+      sujet: values.sujet,
+      corps: values.corps,
+      segment: values.segment,
+      destinataires,
+      date: fiche.campagne.date,
+      statut: 'envoye',
+    });
+    setFiche({ open: false, campagne: null });
+    setMessage(`Campagne « ${values.sujet} » mise à jour.`);
+    rafraichir();
+  }
+
+  async function supprimerCampagne() {
+    if (fiche.campagne) await campagnesStore.remove(fiche.campagne.id);
+    setFiche({ open: false, campagne: null });
+    rafraichir();
+  }
+
   function changerVue(v: VueMail) {
     setMessage(null);
     setVue(v);
@@ -118,7 +145,21 @@ export default function MailPage() {
         <ComposerView contacts={contacts} onSend={envoyerCampagne} />
       )}
       {vue === 'leads' && <LeadCaptureView onSubmit={creerLead} />}
-      {vue === 'historique' && <HistoriqueView campagnes={campagnes} />}
+      {vue === 'historique' && (
+        <HistoriqueView
+          campagnes={campagnes}
+          onSelect={(c) => setFiche({ open: true, campagne: c })}
+        />
+      )}
+
+      <CampagneFiche
+        open={fiche.open}
+        campagne={fiche.campagne}
+        contacts={contacts}
+        onClose={() => setFiche({ open: false, campagne: null })}
+        onSave={modifierCampagne}
+        onDelete={supprimerCampagne}
+      />
     </>
   );
 }

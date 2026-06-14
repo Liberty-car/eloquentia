@@ -12,7 +12,13 @@ function formatDateCourte(iso: string): string {
   return `${j}/${m}/${a}`;
 }
 
-export function HistoriqueView({ campagnes }: { campagnes: Campagne[] }) {
+export function HistoriqueView({
+  campagnes,
+  onSelect,
+}: {
+  campagnes: Campagne[];
+  onSelect: (campagne: Campagne) => void;
+}) {
   if (campagnes.length === 0) {
     return (
       <EmptyState
@@ -29,9 +35,11 @@ export function HistoriqueView({ campagnes }: { campagnes: Campagne[] }) {
   return (
     <div className="flex flex-col gap-2">
       {triees.map((c) => (
-        <article
+        <button
           key={c.id}
-          className="rounded-xl border-2 border-projecteur bg-papier p-4"
+          type="button"
+          onClick={() => onSelect(c)}
+          className="rounded-xl border-2 border-projecteur bg-papier p-4 text-left transition-colors hover:bg-scene"
         >
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -48,7 +56,7 @@ export function HistoriqueView({ campagnes }: { campagnes: Campagne[] }) {
               {c.corps}
             </p>
           )}
-        </article>
+        </button>
       ))}
     </div>
   );

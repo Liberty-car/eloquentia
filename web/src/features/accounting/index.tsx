@@ -226,7 +226,9 @@ export default function AccountingPage() {
         </>
       )}
       {vue === 'dashboard' && <ComptaDashboardView mouvements={mouvements} />}
-      {vue === 'previsionnel' && <PrevisionnelView mouvements={mouvements} />}
+      {vue === 'previsionnel' && (
+        <PrevisionnelView mouvements={mouvements} onSelect={selectionner} />
+      )}
 
       <MouvementFiche
         open={fiche.open}

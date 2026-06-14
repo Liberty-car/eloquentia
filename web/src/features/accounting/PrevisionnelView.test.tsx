@@ -35,7 +35,7 @@ const mvts: Mouvement[] = [
 
 describe('PrevisionnelView', () => {
   it('affiche les mouvements prévisionnels groupés par année', () => {
-    render(<PrevisionnelView mouvements={mvts} />);
+    render(<PrevisionnelView mouvements={mvts} onSelect={() => {}} />);
     expect(screen.getByText('2027')).toBeInTheDocument();
     expect(screen.getByText('2028')).toBeInTheDocument();
     expect(screen.getByText('Subvention 2027')).toBeInTheDocument();
@@ -45,7 +45,7 @@ describe('PrevisionnelView', () => {
 
   it('affiche un état vide sans prévisionnel', () => {
     const reelSeul: Mouvement[] = [mvts[0]!];
-    render(<PrevisionnelView mouvements={reelSeul} />);
+    render(<PrevisionnelView mouvements={reelSeul} onSelect={() => {}} />);
     expect(
       screen.getByText('Aucun mouvement prévisionnel'),
     ).toBeInTheDocument();
