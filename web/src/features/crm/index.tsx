@@ -93,11 +93,18 @@ export default function CrmPage() {
     if (nt !== undefined) opts.notes = nt;
 
     if (contactEdite) {
-      await contactsStore.update(contactEdite.id, {
+      // Remplacement complet pour permettre de vider un champ optionnel.
+      const complet: Omit<Contact, 'id'> = {
         ...requis,
         ...opts,
+        source: contactEdite.source,
+        dateCreation: contactEdite.dateCreation,
         dateDerniereInteraction: aujourdhui(),
-      });
+      };
+      if (contactEdite.prochaineRelance) {
+        complet.prochaineRelance = contactEdite.prochaineRelance;
+      }
+      await contactsStore.replace(contactEdite.id, complet);
     } else {
       await contactsStore.create({
         ...requis,

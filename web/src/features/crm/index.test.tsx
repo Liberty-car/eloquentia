@@ -1,6 +1,7 @@
 import { beforeEach, describe, it, expect } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import CrmPage from './index';
+import { contactsStore } from './store';
 
 describe('CrmPage', () => {
   beforeEach(() => localStorage.clear());
@@ -36,5 +37,23 @@ describe('CrmPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Tableau de bord' }));
     expect(await screen.findByText('Contacts')).toBeInTheDocument();
     expect(screen.getByTestId('kpi-contacts')).toHaveTextContent('20');
+  });
+
+  it('édition : vider un champ optionnel le supprime', async () => {
+    render(<CrmPage />);
+    fireEvent.click(screen.getByRole('button', { name: /Données de démo/ }));
+    await waitFor(() =>
+      expect(screen.getByText('Lucie Martin')).toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByText('Lucie Martin'));
+    const champEmail = await screen.findByLabelText('Email');
+    fireEvent.change(champEmail, { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
+
+    await waitFor(async () => {
+      const c = await contactsStore.get('c1');
+      expect(c?.email).toBeUndefined();
+    });
   });
 });
