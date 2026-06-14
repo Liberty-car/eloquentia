@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router';
 import { Calendar, Home, LogOut, Mail, Users, Wallet } from 'lucide-react';
 import { useAuth } from './lib/auth/AuthContext';
+import { Mascotte } from './features/mascotte/Mascotte';
 import { cn } from './lib/cn';
 
 const links = [
@@ -54,6 +55,7 @@ export function RootLayout() {
       <main className="flex-1 px-8 py-6">
         <Outlet />
       </main>
+      <Mascotte />
     </div>
   );
 }

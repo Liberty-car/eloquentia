@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router/dom';
 import { AuthProvider } from './lib/auth/AuthContext';
+import { MascotteProvider } from './features/mascotte/MascotteProvider';
 import { router } from './router';
 import '@fontsource/plus-jakarta-sans/400.css';
 import '@fontsource/plus-jakarta-sans/500.css';
@@ -18,7 +19,9 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <MascotteProvider>
+        <RouterProvider router={router} />
+      </MascotteProvider>
     </AuthProvider>
   </StrictMode>,
 );
