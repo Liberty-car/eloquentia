@@ -1,2 +1,44 @@
-/* Tailwind v4, importé brut. Aucun thème, palette ni token : neutre par choix. */
+/* Tailwind v4 avec tokens ancres dans l'univers de l'eloquence (cf. spec). */
 @import 'tailwindcss';
+
+@theme {
+  /* Surfaces et texte */
+  --color-papier: #ffffff;
+  --color-scene: #fbfaf8;
+  --color-encre: #1f2937;
+  --color-encre-2: #6b7280;
+  --color-encre-3: #9ca3af;
+  --color-encre-4: #c4c8cf;
+
+  /* Accents */
+  --color-gel-rose: #db6a8f;
+  --color-velours: #ca3c66;
+  --color-rose-voile: #e8aabe;
+  --color-projecteur: #f5df4d;
+  --color-projecteur-doux: #ffd777;
+
+  /* Brumes (fonds pales) */
+  --color-rose-brume: #fbe6ec;
+  --color-jaune-brume: #fff6d9;
+
+  /* Bordures */
+  --color-trait: rgba(31, 41, 55, 0.08);
+  --color-trait-fort: rgba(31, 41, 55, 0.14);
+  --color-focus: #db6a8f;
+
+  /* Semantiques */
+  --color-succes: #2f9e6e;
+  --color-alerte: #e0a23b;
+  --color-erreur: #db5566;
+
+  /* Typographie */
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-scene);
+    color: var(--color-encre);
+    font-family: var(--font-sans);
+  }
+}
