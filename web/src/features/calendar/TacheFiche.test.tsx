@@ -26,4 +26,52 @@ describe('TacheFiche', () => {
       membre: 'Luciano',
     });
   });
+
+  it('« Marquer comme réalisé » enregistre la tâche en statut fait', () => {
+    const onSave = vi.fn();
+    render(
+      <TacheFiche
+        open
+        tache={{
+          id: 't1',
+          titre: 'Briefer le jury',
+          membre: 'Eva',
+          statut: 'en_cours',
+          priorite: 'haute',
+          echeance: '2026-09-05',
+        }}
+        dateInitiale="2026-09-12"
+        onClose={() => {}}
+        onSave={onSave}
+        onDelete={() => {}}
+      />,
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: /Marquer comme réalisé/ }),
+    );
+    expect(onSave).toHaveBeenCalledOnce();
+    expect(onSave.mock.calls[0]![0]).toMatchObject({ statut: 'fait' });
+  });
+
+  it('masque le bouton « Marquer comme réalisé » pour une tâche déjà faite', () => {
+    render(
+      <TacheFiche
+        open
+        tache={{
+          id: 't1',
+          titre: 'Briefer le jury',
+          membre: 'Eva',
+          statut: 'fait',
+          priorite: 'haute',
+        }}
+        dateInitiale="2026-09-12"
+        onClose={() => {}}
+        onSave={() => {}}
+        onDelete={() => {}}
+      />,
+    );
+    expect(
+      screen.queryByRole('button', { name: /Marquer comme réalisé/ }),
+    ).not.toBeInTheDocument();
+  });
 });

@@ -10,6 +10,7 @@ export interface CalendarFiltres {
   statut: Statut | 'tous';
   membre: Membre | 'tous';
   priorite: Priorite | 'tous';
+  masquerTerminees: boolean;
 }
 
 export const FILTRES_CAL_INITIAUX: CalendarFiltres = {
@@ -18,6 +19,7 @@ export const FILTRES_CAL_INITIAUX: CalendarFiltres = {
   statut: 'tous',
   membre: 'tous',
   priorite: 'tous',
+  masquerTerminees: false,
 };
 
 export function filtrerEvenements(
@@ -39,6 +41,7 @@ export function filtrerTaches(taches: Tache[], f: CalendarFiltres): Tache[] {
   if (f.type === 'evenements') return [];
   const q = f.recherche.trim().toLowerCase();
   return taches.filter((t) => {
+    if (f.masquerTerminees && t.statut === 'fait') return false;
     if (f.statut !== 'tous' && t.statut !== f.statut) return false;
     if (f.membre !== 'tous' && t.membre !== f.membre) return false;
     if (f.priorite !== 'tous' && t.priorite !== f.priorite) return false;

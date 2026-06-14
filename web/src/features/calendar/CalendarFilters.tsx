@@ -119,6 +119,25 @@ export function CalendarFilters({
               </option>
             ))}
           </select>
+
+          <button
+            type="button"
+            aria-pressed={filtres.masquerTerminees}
+            onClick={() =>
+              onChange({
+                ...filtres,
+                masquerTerminees: !filtres.masquerTerminees,
+              })
+            }
+            className={cn(
+              'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
+              filtres.masquerTerminees
+                ? 'border-gel-rose bg-rose-brume text-velours'
+                : 'border-trait-fort bg-papier text-encre-2 hover:bg-scene',
+            )}
+          >
+            Masquer les terminées
+          </button>
         </>
       )}
     </div>

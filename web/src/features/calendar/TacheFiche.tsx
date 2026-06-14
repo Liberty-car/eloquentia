@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Check } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { SidePanel } from '../../components/ui/SidePanel';
@@ -149,6 +150,17 @@ export function TacheFiche({
             className="rounded-[10px] border border-trait bg-scene px-3 py-2 text-sm text-encre placeholder:text-encre-4 focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus/30"
           />
         </div>
+
+        {tache && values.statut !== 'fait' && (
+          <Button
+            variant="outline"
+            className="w-full justify-center"
+            onClick={() => onSave({ ...values, statut: 'fait' })}
+          >
+            <Check size={16} />
+            Marquer comme réalisé
+          </Button>
+        )}
 
         <div className="mt-2 flex items-center justify-between">
           {tache ? (

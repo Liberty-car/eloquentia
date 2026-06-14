@@ -42,4 +42,18 @@ describe('CalendarFilters', () => {
       type: 'taches',
     });
   });
+
+  it('bascule « Masquer les terminées »', () => {
+    const onChange = vi.fn();
+    render(
+      <CalendarFilters filtres={FILTRES_CAL_INITIAUX} onChange={onChange} />,
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Masquer les terminées' }),
+    );
+    expect(onChange).toHaveBeenCalledWith({
+      ...FILTRES_CAL_INITIAUX,
+      masquerTerminees: true,
+    });
+  });
 });

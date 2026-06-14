@@ -65,6 +65,19 @@ describe('filtre agenda', () => {
     ]);
   });
 
+  it('masque les tâches terminées quand demandé', () => {
+    const faites: Tache[] = [
+      { ...taches[0]!, statut: 'fait' },
+      { ...taches[1]!, statut: 'en_cours' },
+    ];
+    expect(filtrerTaches(faites, filtres({ masquerTerminees: true }))).toEqual([
+      faites[1],
+    ]);
+    expect(
+      filtrerTaches(faites, filtres({ masquerTerminees: false })),
+    ).toHaveLength(2);
+  });
+
   it('recherche plein texte sur événements et tâches', () => {
     expect(filtrerEvenements(evenements, filtres({ recherche: 'théâtre' })));
     expect(
