@@ -1,7 +1,7 @@
 # Eloquetia : spec fondations + design system + CRM (premier cycle)
 
 - Date : 2026-06-14
-- Statut : coquille + CRM complet + Calendrier complet + Comptabilité complète (liste/fiche, tableau de bord réel, prévisionnel cumulé jusqu'à juil. 2028, export CSV compatible Excel) implémentés. Suivi compta non bloquant : extraire KpiCard partagé, tests d'invariant montant positif, sous-totaux réel/prévisionnel dans la liste. Mail et Accueil restants.
+- Statut : APPLICATION COMPLÈTE (phase de test, sans outils externes). 5 onglets implémentés : Accueil (synthèse hors compta + démo globale), CRM (6 vues + import CSV), Calendrier (mois/agenda/membre/statut), Mail marketing (composer segmenté + capture de leads vers CRM + historique, envoi mocké), Comptabilité (liste filtrable réel/prévisionnel, tableau de bord réel, prévisionnel cumulé jusqu'à juil. 2028, export CSV compatible Excel). 113 tests verts, typecheck/lint OK, build de production OK. Suivi non bloquant : extraire KpiCard partagé, factoriser formatDateCourte, tests d'invariant montant positif. Export Excel binaire (.xlsx) volontairement reporté (dépendance SheetJS vulnérable) ; le CSV BOM UTF-8 s'ouvre nativement dans Excel.
 - Auteur : Anthony + Claude
 
 ## 1. Contexte et objectif
