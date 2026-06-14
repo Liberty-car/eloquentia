@@ -16,6 +16,7 @@ import { evenementsStore, tachesStore } from '../calendar/store';
 import { mouvementsStore } from '../accounting/store';
 import { campagnesStore } from '../mail/store';
 import { libelleBadge, toneBadge } from '../crm/badges';
+import { MascotteHabitat } from '../mascotte/MascotteHabitat';
 import { type Contact } from '../crm/types';
 import type { Evenement, Tache } from '../calendar/types';
 import {
@@ -173,6 +174,8 @@ export default function HomePage() {
         <KpiCard label="Événements à venir" valeur={prochains.length} />
         <KpiCard label="Tâches à faire" valeur={nbTachesActives} />
       </div>
+
+      <MascotteHabitat />
 
       <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <SectionCard

@@ -103,12 +103,55 @@
   animation: quetia-zzz 2.6s ease-in-out infinite;
 }
 
+/* Promenade dans l'habitat (va-et-vient avec demi-tour) */
+@keyframes quetia-promenade {
+  0% {
+    left: 4%;
+    transform: scaleX(1);
+  }
+  47% {
+    left: 68%;
+    transform: scaleX(1);
+  }
+  50% {
+    left: 68%;
+    transform: scaleX(-1);
+  }
+  97% {
+    left: 4%;
+    transform: scaleX(-1);
+  }
+  100% {
+    left: 4%;
+    transform: scaleX(1);
+  }
+}
+.quetia-promenade {
+  position: absolute;
+  bottom: 10px;
+  animation: quetia-promenade 9s ease-in-out infinite;
+}
+@keyframes quetia-scintille {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.quetia-etoile {
+  animation: quetia-scintille 3s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .quetia-idle,
   .quetia-idle--vif,
   .quetia-idle--lent,
   .quetia-yeux,
-  .quetia-zzz {
+  .quetia-zzz,
+  .quetia-promenade,
+  .quetia-etoile {
     animation: none !important;
   }
 }
