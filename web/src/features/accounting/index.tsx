@@ -19,6 +19,7 @@ const FILTRES_INITIAUX: ComptaFiltres = {
   recherche: '',
   type: 'tous',
   categorie: 'toutes',
+  nature: 'toutes',
 };
 
 export default function AccountingPage() {

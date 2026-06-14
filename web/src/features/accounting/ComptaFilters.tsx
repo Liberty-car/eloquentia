@@ -1,9 +1,15 @@
 import { CATEGORIE_LABELS, TYPES_MOUVEMENT, TYPE_LABELS } from './types';
-import type { ComptaFiltres } from './filter';
+import type { ComptaFiltres, NatureFiltre } from './filter';
 import { cn } from '../../lib/cn';
 
 const TYPE_OPTIONS = ['tous', ...TYPES_MOUVEMENT] as const;
 const CATEGORIES = Object.keys(CATEGORIE_LABELS);
+
+const NATURE_OPTIONS: { id: NatureFiltre; label: string }[] = [
+  { id: 'toutes', label: 'Tout' },
+  { id: 'reel', label: 'Réel' },
+  { id: 'previsionnel', label: 'Prévisionnel' },
+];
 
 export function ComptaFilters({
   filtres,
@@ -16,6 +22,7 @@ export function ComptaFilters({
     <div className="flex flex-wrap items-center gap-2">
       <input
         type="search"
+        aria-label="Rechercher un mouvement"
         value={filtres.recherche}
         onChange={(e) => onChange({ ...filtres, recherche: e.target.value })}
         placeholder="Rechercher un libellé"
@@ -44,8 +51,29 @@ export function ComptaFilters({
 
       <span className="mx-1 h-5 w-px bg-trait-fort" />
 
+      <div className="inline-flex items-center gap-1">
+        {NATURE_OPTIONS.map((n) => (
+          <button
+            key={n.id}
+            type="button"
+            onClick={() => onChange({ ...filtres, nature: n.id })}
+            className={cn(
+              'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
+              filtres.nature === n.id
+                ? 'border-gel-rose bg-rose-brume text-velours'
+                : 'border-trait-fort bg-papier text-encre-2 hover:bg-scene',
+            )}
+          >
+            {n.label}
+          </button>
+        ))}
+      </div>
+
+      <span className="mx-1 h-5 w-px bg-trait-fort" />
+
       <select
         value={filtres.categorie}
+        aria-label="Filtrer par catégorie"
         onChange={(e) => onChange({ ...filtres, categorie: e.target.value })}
         className="h-9 rounded-[10px] border border-trait bg-scene px-3 text-sm text-encre focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus/30"
       >

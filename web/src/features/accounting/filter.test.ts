@@ -6,6 +6,7 @@ const base: ComptaFiltres = {
   recherche: '',
   type: 'tous',
   categorie: 'toutes',
+  nature: 'toutes',
 };
 
 const mvts: Mouvement[] = [
@@ -27,6 +28,15 @@ const mvts: Mouvement[] = [
     categorie: 'communication',
     previsionnel: false,
   },
+  {
+    id: 'c',
+    type: 'revenu',
+    libelle: 'Subvention prévisionnelle 2027',
+    montant: 9000,
+    date: '2027-01-15',
+    categorie: 'subventions',
+    previsionnel: true,
+  },
 ];
 
 describe('filterMouvements', () => {
@@ -37,7 +47,7 @@ describe('filterMouvements', () => {
 
   it('filtre par catégorie', () => {
     const r = filterMouvements(mvts, { ...base, categorie: 'subventions' });
-    expect(r.map((m) => m.id)).toEqual(['a']);
+    expect(r.map((m) => m.id)).toEqual(['a', 'c']);
   });
 
   it('filtre par recherche sur le libellé (insensible à la casse)', () => {
@@ -45,7 +55,17 @@ describe('filterMouvements', () => {
     expect(r.map((m) => m.id)).toEqual(['b']);
   });
 
+  it('filtre par nature réel uniquement', () => {
+    const r = filterMouvements(mvts, { ...base, nature: 'reel' });
+    expect(r.map((m) => m.id)).toEqual(['a', 'b']);
+  });
+
+  it('filtre par nature prévisionnel uniquement', () => {
+    const r = filterMouvements(mvts, { ...base, nature: 'previsionnel' });
+    expect(r.map((m) => m.id)).toEqual(['c']);
+  });
+
   it('renvoie tout sans filtre', () => {
-    expect(filterMouvements(mvts, base)).toHaveLength(2);
+    expect(filterMouvements(mvts, base)).toHaveLength(3);
   });
 });

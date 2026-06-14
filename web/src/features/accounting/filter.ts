@@ -1,9 +1,12 @@
 import type { Mouvement, TypeMouvement } from './types';
 
+export type NatureFiltre = 'toutes' | 'reel' | 'previsionnel';
+
 export interface ComptaFiltres {
   recherche: string;
   type: TypeMouvement | 'tous';
   categorie: string | 'toutes';
+  nature: NatureFiltre;
 }
 
 export function filterMouvements(
@@ -16,6 +19,8 @@ export function filterMouvements(
     if (filtres.categorie !== 'toutes' && m.categorie !== filtres.categorie) {
       return false;
     }
+    if (filtres.nature === 'reel' && m.previsionnel) return false;
+    if (filtres.nature === 'previsionnel' && !m.previsionnel) return false;
     if (q && !m.libelle.toLowerCase().includes(q)) return false;
     return true;
   });

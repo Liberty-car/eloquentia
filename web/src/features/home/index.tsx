@@ -113,7 +113,11 @@ export default function HomePage() {
     void contactsStore.list().then(setContacts);
     void evenementsStore.list().then(setEvenements);
     void tachesStore.list().then(setTaches);
-    void contactsStore.isSeeded().then(setDemo);
+    // La démo de l'Accueil est globale : on la considère active seulement
+    // si les 5 stores de l'app sont effectivement remplis.
+    void Promise.all(TOUS_STORES.map((s) => s.isSeeded())).then((seeds) =>
+      setDemo(seeds.every(Boolean)),
+    );
   }, []);
 
   useEffect(() => {
