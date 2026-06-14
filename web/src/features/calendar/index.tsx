@@ -6,12 +6,18 @@ import { SidePanel } from '../../components/ui/SidePanel';
 import { cn } from '../../lib/cn';
 import { evenementsStore, tachesStore } from './store';
 import { MonthCalendar } from './MonthCalendar';
+import { AgendaView } from './AgendaView';
+import { TachesParMembreView } from './TachesParMembreView';
+import { TachesStatutView } from './TachesStatutView';
+import { CalViewSwitcher } from './CalViewSwitcher';
 import { EvenementFiche } from './EvenementFiche';
 import { TacheFiche } from './TacheFiche';
 import { aujourdhuiIso, NOMS_MOIS } from './grille';
+import type { VueCal } from './views';
 import type {
   Evenement,
   EvenementFormValues,
+  Statut,
   Tache,
   TacheFormValues,
 } from './types';
@@ -25,6 +31,7 @@ export default function CalendarPage() {
   const maintenant = new Date();
   const [annee, setAnnee] = useState(maintenant.getFullYear());
   const [mois, setMois] = useState(maintenant.getMonth());
+  const [vue, setVue] = useState<VueCal>('mois');
   const [evenements, setEvenements] = useState<Evenement[]>([]);
   const [taches, setTaches] = useState<Tache[]>([]);
   const [demo, setDemo] = useState(false);
@@ -89,14 +96,12 @@ export default function CalendarPage() {
     setChooserOuvert(true);
   }
 
-  function nouvelEvenement(iso?: string) {
-    if (iso) setDateChoisie(iso);
+  function nouvelEvenement() {
     setChooserOuvert(false);
     setEvFiche({ open: true, evenement: null });
   }
 
-  function nouvelleTache(iso?: string) {
-    if (iso) setDateChoisie(iso);
+  function nouvelleTache() {
     setChooserOuvert(false);
     setTFiche({ open: true, tache: null });
   }
@@ -153,6 +158,17 @@ export default function CalendarPage() {
     rafraichir();
   }
 
+  async function changerStatut(id: string, statut: Statut) {
+    const tache = taches.find((t) => t.id === id);
+    if (!tache || tache.statut === statut) return;
+    await tachesStore.update(id, { statut });
+    rafraichir();
+  }
+
+  const selectEvenement = (e: Evenement) =>
+    setEvFiche({ open: true, evenement: e });
+  const selectTache = (t: Tache) => setTFiche({ open: true, tache: t });
+
   return (
     <>
       <PageHeader
@@ -178,51 +194,83 @@ export default function CalendarPage() {
               />
               Données de démo {demo ? 'activées' : 'désactivées'}
             </button>
-            <Button variant="outline" onClick={() => nouvelleTache()}>
+            <Button variant="outline" onClick={nouvelleTache}>
               Nouvelle tâche
             </Button>
-            <Button variant="primary" onClick={() => nouvelEvenement()}>
+            <Button variant="primary" onClick={nouvelEvenement}>
               Nouvel événement
             </Button>
           </>
         }
       />
 
-      <div className="mb-4 flex items-center gap-3">
-        <Button
-          variant="ghost"
-          onClick={moisPrecedent}
-          aria-label="Mois précédent"
-        >
-          <ChevronLeft size={18} />
-        </Button>
-        <span className="min-w-44 text-center text-lg font-bold text-encre">
-          {NOMS_MOIS[mois]} {annee}
-        </span>
-        <Button variant="ghost" onClick={moisSuivant} aria-label="Mois suivant">
-          <ChevronRight size={18} />
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => {
-            setAnnee(maintenant.getFullYear());
-            setMois(maintenant.getMonth());
-          }}
-        >
-          Aujourd'hui
-        </Button>
+      <div className="mb-4">
+        <CalViewSwitcher value={vue} onChange={setVue} />
       </div>
 
-      <MonthCalendar
-        annee={annee}
-        mois={mois}
-        evenements={evenements}
-        taches={taches}
-        aujourdhui={aujourdhuiIso()}
-        onJourClic={ouvrirJour}
-        onSelectEvenement={(e) => setEvFiche({ open: true, evenement: e })}
-        onSelectTache={(t) => setTFiche({ open: true, tache: t })}
-      />
+      {vue === 'mois' && (
+        <>
+          <div className="mb-4 flex items-center gap-3">
+            <Button
+              variant="ghost"
+              onClick={moisPrecedent}
+              aria-label="Mois précédent"
+            >
+              <ChevronLeft size={18} />
+            </Button>
+            <span className="min-w-44 text-center text-lg font-bold text-encre">
+              {NOMS_MOIS[mois]} {annee}
+            </span>
+            <Button
+              variant="ghost"
+              onClick={moisSuivant}
+              aria-label="Mois suivant"
+            >
+              <ChevronRight size={18} />
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setAnnee(maintenant.getFullYear());
+                setMois(maintenant.getMonth());
+              }}
+            >
+              Aujourd'hui
+            </Button>
+          </div>
+          <MonthCalendar
+            annee={annee}
+            mois={mois}
+            evenements={evenements}
+            taches={taches}
+            aujourdhui={aujourdhuiIso()}
+            onJourClic={ouvrirJour}
+            onSelectEvenement={selectEvenement}
+            onSelectTache={selectTache}
+          />
+        </>
+      )}
+
+      {vue === 'agenda' && (
+        <AgendaView
+          evenements={evenements}
+          taches={taches}
+          onSelectEvenement={selectEvenement}
+          onSelectTache={selectTache}
+        />
+      )}
+
+      {vue === 'membres' && (
+        <TachesParMembreView taches={taches} onSelectTache={selectTache} />
+      )}
+
+      {vue === 'statut' && (
+        <TachesStatutView
+          taches={taches}
+          onChangeStatut={changerStatut}
+          onSelectTache={selectTache}
+        />
+      )}
 
       <SidePanel
         open={chooserOuvert}
@@ -230,10 +278,10 @@ export default function CalendarPage() {
         onClose={() => setChooserOuvert(false)}
       >
         <div className="flex flex-col gap-3">
-          <Button variant="primary" onClick={() => nouvelEvenement()}>
+          <Button variant="primary" onClick={nouvelEvenement}>
             Nouvel événement
           </Button>
-          <Button variant="outline" onClick={() => nouvelleTache()}>
+          <Button variant="outline" onClick={nouvelleTache}>
             Nouvelle tâche
           </Button>
         </div>
