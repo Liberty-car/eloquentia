@@ -55,5 +55,10 @@ describe('CrmPage', () => {
       const c = await contactsStore.get('c1');
       expect(c?.email).toBeUndefined();
     });
+    // Les autres champs ne doivent pas etre perdus par le remplacement.
+    const c = await contactsStore.get('c1');
+    expect(c?.source).toBe('manuel');
+    expect(c?.dateCreation).toBe('2026-01-12');
+    expect(c?.prochaineRelance).toBe('2026-06-20');
   });
 });

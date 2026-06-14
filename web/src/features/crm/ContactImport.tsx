@@ -15,14 +15,20 @@ export function ContactImport({
   const [rows, setRows] = useState<ImportRow[]>([]);
   const [ignorees, setIgnorees] = useState(0);
   const [analyse, setAnalyse] = useState(false);
+  const [erreur, setErreur] = useState(false);
 
   function chargerFichier(fichier: File) {
+    setErreur(false);
     const lecteur = new FileReader();
     lecteur.onload = () => {
       const resultat = parseContactsCsv(String(lecteur.result));
       setRows(resultat.valides);
       setIgnorees(resultat.ignorees);
       setAnalyse(true);
+    };
+    lecteur.onerror = () => {
+      setAnalyse(false);
+      setErreur(true);
     };
     lecteur.readAsText(fichier);
   }
@@ -31,6 +37,7 @@ export function ContactImport({
     setRows([]);
     setIgnorees(0);
     setAnalyse(false);
+    setErreur(false);
   }
 
   function fermer() {
@@ -55,6 +62,12 @@ export function ContactImport({
           }}
           className="text-sm text-encre-2 file:mr-3 file:rounded-[10px] file:border file:border-trait-fort file:bg-papier file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-encre"
         />
+
+        {erreur && (
+          <p className="text-sm font-medium text-erreur">
+            Lecture du fichier impossible. Réessaie avec un autre fichier CSV.
+          </p>
+        )}
 
         {analyse && (
           <div className="flex flex-col gap-3">

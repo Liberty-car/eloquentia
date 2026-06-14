@@ -1,6 +1,6 @@
 import Papa from 'papaparse';
 
-// Une ligne de contact issue d'un CSV (champs reconnus, en-tetes en minuscules).
+// Une ligne de contact issue d'un CSV (champs reconnus, en-têtes en minuscules).
 export interface ImportRow {
   prenom: string;
   nom: string;
