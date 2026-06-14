@@ -21,6 +21,8 @@ export interface OptionEvenement {
 function valeurs(
   mouvement: Mouvement | null,
   dateInitiale: string,
+  evenementInitial: string,
+  previsionnelInitial: boolean,
 ): MouvementFormValues {
   return {
     type: mouvement?.type ?? 'revenu',
@@ -28,8 +30,8 @@ function valeurs(
     montant: mouvement ? String(mouvement.montant) : '',
     date: mouvement?.date ?? dateInitiale,
     categorie: mouvement?.categorie ?? 'dons',
-    previsionnel: mouvement?.previsionnel ?? false,
-    evenementId: mouvement?.evenementId ?? '',
+    previsionnel: mouvement?.previsionnel ?? previsionnelInitial,
+    evenementId: mouvement?.evenementId ?? evenementInitial,
     justificatif: mouvement?.justificatif ?? '',
   };
 }
@@ -39,6 +41,8 @@ export function MouvementFiche({
   mouvement,
   dateInitiale,
   evenements,
+  evenementInitial = '',
+  previsionnelInitial = false,
   onClose,
   onSave,
   onDelete,
@@ -47,17 +51,21 @@ export function MouvementFiche({
   mouvement: Mouvement | null;
   dateInitiale: string;
   evenements: OptionEvenement[];
+  evenementInitial?: string;
+  previsionnelInitial?: boolean;
   onClose: () => void;
   onSave: (values: MouvementFormValues) => void;
   onDelete: () => void;
 }) {
   const [values, setValues] = useState<MouvementFormValues>(
-    valeurs(mouvement, dateInitiale),
+    valeurs(mouvement, dateInitiale, evenementInitial, previsionnelInitial),
   );
 
   useEffect(() => {
-    setValues(valeurs(mouvement, dateInitiale));
-  }, [mouvement, dateInitiale]);
+    setValues(
+      valeurs(mouvement, dateInitiale, evenementInitial, previsionnelInitial),
+    );
+  }, [mouvement, dateInitiale, evenementInitial, previsionnelInitial]);
 
   function set<K extends keyof MouvementFormValues>(
     key: K,

@@ -9,11 +9,19 @@ import { ComptaFilters } from './ComptaFilters';
 import { MouvementListView } from './MouvementListView';
 import { ComptaDashboardView } from './ComptaDashboardView';
 import { PrevisionnelView } from './PrevisionnelView';
-import { MouvementFiche, type OptionEvenement } from './MouvementFiche';
+import { MouvementFiche } from './MouvementFiche';
+import { BudgetEvenementPanel } from './BudgetEvenementPanel';
 import { filterMouvements, type ComptaFiltres } from './filter';
 import { mouvementsVersCsv, telechargerCsv } from './export';
 import type { Mouvement, MouvementFormValues } from './types';
 import type { VueCompta } from './views';
+
+// Option d'événement enrichie de la date (pour le panneau budget).
+interface OptionEvenement {
+  id: string;
+  titre: string;
+  date: string;
+}
 
 const FILTRES_INITIAUX: ComptaFiltres = {
   recherche: '',
@@ -32,7 +40,14 @@ export default function AccountingPage() {
   const [fiche, setFiche] = useState<{
     open: boolean;
     mouvement: Mouvement | null;
-  }>({ open: false, mouvement: null });
+    evenementInitial: string;
+    previsionnelInitial: boolean;
+  }>({
+    open: false,
+    mouvement: null,
+    evenementInitial: '',
+    previsionnelInitial: false,
+  });
 
   const rafraichir = useCallback(() => {
     void mouvementsStore.list().then(setMouvements);
@@ -40,7 +55,9 @@ export default function AccountingPage() {
     void evenementsStore
       .list()
       .then((evs) =>
-        setEvenements(evs.map((e) => ({ id: e.id, titre: e.titre }))),
+        setEvenements(
+          evs.map((e) => ({ id: e.id, titre: e.titre, date: e.date })),
+        ),
       );
   }, []);
 
@@ -54,8 +71,41 @@ export default function AccountingPage() {
     rafraichir();
   }
 
+  function fermerFiche() {
+    setFiche({
+      open: false,
+      mouvement: null,
+      evenementInitial: '',
+      previsionnelInitial: false,
+    });
+  }
+
   function nouveau() {
-    setFiche({ open: true, mouvement: null });
+    setFiche({
+      open: true,
+      mouvement: null,
+      evenementInitial: '',
+      previsionnelInitial: false,
+    });
+  }
+
+  // Nouvelle ligne de budget pré-rattachée à un événement (prévisionnelle).
+  function nouveauPourEvenement(evenementId: string) {
+    setFiche({
+      open: true,
+      mouvement: null,
+      evenementInitial: evenementId,
+      previsionnelInitial: true,
+    });
+  }
+
+  function selectionner(mouvement: Mouvement) {
+    setFiche({
+      open: true,
+      mouvement,
+      evenementInitial: '',
+      previsionnelInitial: false,
+    });
   }
 
   async function enregistrer(values: MouvementFormValues) {
@@ -78,13 +128,13 @@ export default function AccountingPage() {
     } else {
       await mouvementsStore.create(base);
     }
-    setFiche({ open: false, mouvement: null });
+    fermerFiche();
     rafraichir();
   }
 
   async function supprimer() {
     if (fiche.mouvement) await mouvementsStore.remove(fiche.mouvement.id);
-    setFiche({ open: false, mouvement: null });
+    fermerFiche();
     rafraichir();
   }
 
@@ -96,6 +146,12 @@ export default function AccountingPage() {
     () => filterMouvements(mouvements, filtres),
     [mouvements, filtres],
   );
+
+  // Événement sélectionné dans le filtre (hors 'tous'/'aucun').
+  const evenementSelectionne =
+    filtres.evenement !== 'tous' && filtres.evenement !== 'aucun'
+      ? (evenements.find((e) => e.id === filtres.evenement) ?? null)
+      : null;
 
   return (
     <>
@@ -144,11 +200,30 @@ export default function AccountingPage() {
       </div>
 
       {vue === 'liste' && (
-        <MouvementListView
-          mouvements={filtres_appliques}
-          evenements={evenements}
-          onSelect={(m) => setFiche({ open: true, mouvement: m })}
-        />
+        <>
+          {evenementSelectionne && (
+            <BudgetEvenementPanel
+              evenement={evenementSelectionne}
+              mouvements={filtres_appliques}
+              onAjouter={() => nouveauPourEvenement(evenementSelectionne.id)}
+            />
+          )}
+          <MouvementListView
+            mouvements={filtres_appliques}
+            evenements={evenements}
+            titreVide={
+              evenementSelectionne
+                ? 'Aucune ligne de budget'
+                : 'Aucun mouvement'
+            }
+            descriptionVide={
+              evenementSelectionne
+                ? 'Ajoute une ligne au budget de cet événement avec le bouton ci-dessus.'
+                : 'Active les données de démo ou ajoute un mouvement.'
+            }
+            onSelect={selectionner}
+          />
+        </>
       )}
       {vue === 'dashboard' && <ComptaDashboardView mouvements={mouvements} />}
       {vue === 'previsionnel' && <PrevisionnelView mouvements={mouvements} />}
@@ -158,7 +233,9 @@ export default function AccountingPage() {
         mouvement={fiche.mouvement}
         dateInitiale="2026-06-15"
         evenements={evenements}
-        onClose={() => setFiche({ open: false, mouvement: null })}
+        evenementInitial={fiche.evenementInitial}
+        previsionnelInitial={fiche.previsionnelInitial}
+        onClose={() => fermerFiche()}
         onSave={enregistrer}
         onDelete={supprimer}
       />

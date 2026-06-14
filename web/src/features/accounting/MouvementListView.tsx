@@ -14,20 +14,19 @@ function formatDateCourte(iso: string): string {
 export function MouvementListView({
   mouvements,
   evenements = [],
+  titreVide = 'Aucun mouvement',
+  descriptionVide = 'Active les données de démo ou ajoute un mouvement.',
   onSelect,
 }: {
   mouvements: Mouvement[];
   evenements?: { id: string; titre: string }[];
+  titreVide?: string;
+  descriptionVide?: string;
   onSelect: (mouvement: Mouvement) => void;
 }) {
   const titreParEvenement = new Map(evenements.map((e) => [e.id, e.titre]));
   if (mouvements.length === 0) {
-    return (
-      <EmptyState
-        title="Aucun mouvement"
-        description="Active les données de démo ou ajoute un mouvement."
-      />
-    );
+    return <EmptyState title={titreVide} description={descriptionVide} />;
   }
 
   const t = totaux(mouvements);
