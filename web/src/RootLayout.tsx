@@ -51,11 +51,13 @@ export function RootLayout() {
         {user && (
           <span className="px-3 pt-1 text-xs text-encre-3">{user.email}</span>
         )}
+        <div className="px-3">
+          <Mascotte />
+        </div>
       </aside>
       <main className="flex-1 px-8 py-6">
         <Outlet />
       </main>
-      <Mascotte />
     </div>
   );
 }

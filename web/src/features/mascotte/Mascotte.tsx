@@ -61,38 +61,43 @@ export function Mascotte() {
   const rythme = reduced ? '' : rythmeIdle(m.humeurBande);
 
   return (
-    <div className="pointer-events-none fixed bottom-4 left-4 z-40 flex flex-col items-start gap-3">
-      <AnimatePresence>
-        {panelOuvert && (
-          <motion.div
-            key="panel"
-            className="pointer-events-auto"
-            initial={
-              reduced ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.96 }
-            }
-            animate={reduced ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-            exit={reduced ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.96 }}
-            transition={{ duration: 0.2 }}
-          >
-            <MascottePanel data={m} onClose={() => setPanelOuvert(false)} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <div className="relative mt-3 flex flex-col items-start">
+      {/* Panneau et bandeau en overlay, ouverts vers le haut */}
+      <div className="absolute bottom-full left-0 z-40 mb-3 flex flex-col gap-2">
+        <AnimatePresence>
+          {panelOuvert && (
+            <motion.div
+              key="panel"
+              initial={
+                reduced ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.96 }
+              }
+              animate={
+                reduced ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }
+              }
+              exit={
+                reduced ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.96 }
+              }
+              transition={{ duration: 0.2 }}
+            >
+              <MascottePanel data={m} onClose={() => setPanelOuvert(false)} />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* Bandeau de passage de stade */}
-      <AnimatePresence>
-        {fx?.levelup && (
-          <motion.div
-            key="banner"
-            className="pointer-events-none rounded-full border-2 border-projecteur bg-jaune-brume px-3 py-1 text-xs font-bold text-encre shadow"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-          >
-            {m.nom} évolue !
-          </motion.div>
-        )}
-      </AnimatePresence>
+        <AnimatePresence>
+          {fx?.levelup && (
+            <motion.div
+              key="banner"
+              className="w-fit rounded-full border-2 border-projecteur bg-jaune-brume px-3 py-1 text-xs font-bold text-encre shadow"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+            >
+              {m.nom} évolue !
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       <button
         type="button"
