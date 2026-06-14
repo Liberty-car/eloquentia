@@ -12,6 +12,11 @@ import {
   type ContactFormValues,
 } from './types';
 
+function formatDate(iso?: string): string {
+  if (!iso) return '-';
+  return new Date(iso).toLocaleDateString('fr-FR');
+}
+
 function valeursInitiales(contact: Contact | null): ContactFormValues {
   return {
     prenom: contact?.prenom ?? '',
@@ -70,6 +75,14 @@ export function ContactFiche({
       onClose={onClose}
     >
       <div className="flex flex-col gap-4">
+        {contact && (
+          <p className="rounded-[10px] bg-scene px-3 py-2 text-xs text-encre-3">
+            Dernière interaction :{' '}
+            <span className="font-medium text-encre-2">
+              {formatDate(contact.dateDerniereInteraction)}
+            </span>
+          </p>
+        )}
         <div className="grid grid-cols-2 gap-3">
           <Input
             label="Prénom"

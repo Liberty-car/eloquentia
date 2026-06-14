@@ -18,6 +18,11 @@ function initiales(contact: Contact): string {
   return `${contact.prenom.charAt(0)}${contact.nom.charAt(0)}`.toUpperCase();
 }
 
+function formatDate(iso?: string): string {
+  if (!iso) return '-';
+  return new Date(iso).toLocaleDateString('fr-FR');
+}
+
 function KanbanCard({
   contact,
   onSelect,
@@ -82,6 +87,9 @@ function KanbanCard({
           ))}
         </div>
       )}
+      <p className="mt-2 text-xs text-encre-3">
+        Dernière interaction : {formatDate(contact.dateDerniereInteraction)}
+      </p>
     </div>
   );
 }

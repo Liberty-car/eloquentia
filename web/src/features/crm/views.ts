@@ -4,7 +4,6 @@ export const VUES = [
   { id: 'liste', label: 'Liste' },
   { id: 'kanban', label: 'Kanban' },
   { id: 'badges', label: 'Par badge' },
-  { id: 'relances', label: 'Relances' },
   { id: 'tableau', label: 'Tableau de bord' },
 ] as const;
 

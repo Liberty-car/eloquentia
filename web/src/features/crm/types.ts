@@ -3,6 +3,7 @@
 export const ETAPES = [
   'a_contacter',
   'contacte',
+  'a_relancer',
   'en_discussion',
   'conclu',
   'perdu',
@@ -12,6 +13,7 @@ export type Etape = (typeof ETAPES)[number];
 export const ETAPE_LABELS: Record<Etape, string> = {
   a_contacter: 'À contacter',
   contacte: 'Contacté',
+  a_relancer: 'À relancer',
   en_discussion: 'En discussion',
   conclu: 'Conclu',
   perdu: 'Perdu',

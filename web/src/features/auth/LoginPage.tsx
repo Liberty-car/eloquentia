@@ -23,7 +23,9 @@ export default function LoginPage() {
         onSubmit={handleSubmit}
         className="w-full max-w-sm rounded-2xl border-2 border-projecteur bg-papier p-8"
       >
-        <h1 className="text-2xl font-extrabold text-encre">Eloquetia</h1>
+        <h1 className="text-2xl font-extrabold text-encre">
+          Eloquentia Strasbourg
+        </h1>
         <p className="mt-1 text-sm text-encre-3">
           Connexion à l'outil de pilotage
         </p>

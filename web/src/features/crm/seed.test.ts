@@ -35,7 +35,7 @@ describe('seedContacts', () => {
     }
   });
 
-  it('couvre les 5 étapes', () => {
+  it('couvre toutes les étapes', () => {
     const etapes = new Set(contacts.map((c) => c.etape));
     for (const e of ETAPES) {
       expect(etapes).toContain(e);

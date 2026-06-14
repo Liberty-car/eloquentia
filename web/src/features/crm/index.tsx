@@ -11,7 +11,6 @@ import { CrmFilters } from './CrmFilters';
 import { CrmViewSwitcher } from './CrmViewSwitcher';
 import { KanbanView } from './KanbanView';
 import { GroupedByBadgeView } from './GroupedByBadgeView';
-import { RelancesView } from './RelancesView';
 import { CrmDashboardView } from './CrmDashboardView';
 import { filterContacts, type ContactFilters } from './filter';
 import { ajouterBadge, supprimerBadge } from './badges';
@@ -198,11 +197,6 @@ export default function CrmPage() {
           contacts={resultatsFiltres}
           onSelect={ouvrirEdition}
         />
-      );
-    }
-    if (vue === 'relances') {
-      return (
-        <RelancesView contacts={resultatsFiltres} onSelect={ouvrirEdition} />
       );
     }
     return (

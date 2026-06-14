@@ -17,7 +17,7 @@ export function RootLayout() {
     <div className="flex min-h-screen bg-scene">
       <aside className="flex w-62 flex-col border-r border-trait px-3 py-5">
         <div className="px-3 pb-6 text-xl font-extrabold text-encre">
-          Eloquetia
+          Eloquentia Strasbourg
         </div>
         <nav className="flex flex-1 flex-col gap-1">
           {links.map(({ to, label, icon: Icon, end }) => (
