@@ -38,6 +38,7 @@ export type FxKind =
   | 'zzz'
   | 'etincelles'
   | 'coeur'
+  | 'coeurs'
   | 'sueur'
   | 'levelup'
   | 'snack';
@@ -50,8 +51,9 @@ export function fxPourReaction(type: ReactionType): FxKind {
     case 'campagne':
       return 'etincelles';
     case 'tache_faite':
-    case 'caresse':
       return 'coeur';
+    case 'caresse':
+      return 'coeurs'; // nuée de petits coeurs autour de la tête
     case 'depense':
     case 'contact_perdu':
       return 'sueur';

@@ -29,6 +29,17 @@ const CONFETTIS = [
   { dx: 22, dy: -16, color: '#f5df4d' },
 ];
 
+// Nuée de petits coeurs autour de la tête (caresse / clic).
+const COEURS = [
+  { left: '2%', top: '24%', size: 12, dx: -10, dy: -14, delay: 0 },
+  { left: '20%', top: '2%', size: 16, dx: -6, dy: -22, delay: 0.05 },
+  { left: '42%', top: '-10%', size: 14, dx: 0, dy: -26, delay: 0.1 },
+  { left: '64%', top: '2%', size: 16, dx: 6, dy: -22, delay: 0.15 },
+  { left: '84%', top: '24%', size: 12, dx: 10, dy: -14, delay: 0.2 },
+  { left: '34%', top: '14%', size: 10, dx: -3, dy: -18, delay: 0.24 },
+  { left: '58%', top: '14%', size: 10, dx: 3, dy: -18, delay: 0.28 },
+];
+
 export function Mascotte() {
   const m = useMascotte();
   const reduced = useReducedMotion() ?? false;
@@ -85,6 +96,8 @@ export function Mascotte() {
   const rythme = reduced ? '' : rythmeIdle(m.humeurBande);
   const montrerZzz =
     !reduced && !content && (dort || m.humeurBande === 'epuise');
+  // Nuée de coeurs : au clic (content) ou lors d'une caresse.
+  const montrerCoeurs = content || fx?.kind === 'coeurs';
 
   return (
     <div className="relative mt-3 flex flex-col items-start">
@@ -150,30 +163,33 @@ export function Mascotte() {
           {montrerZzz && <Zzz />}
 
           <AnimatePresence>
-            {content && (
-              <>
+            {montrerCoeurs &&
+              COEURS.map((c, i) => (
                 <motion.div
-                  key="coeur-1"
-                  className="pointer-events-none absolute left-1/2 top-0 h-5 w-5 -translate-x-1/2"
-                  initial={{ opacity: 0, scale: 0.4, y: 6 }}
-                  animate={{ opacity: 1, scale: 1, y: -10 }}
-                  exit={{ opacity: 0, y: -18 }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                  key={`coeur-${i}`}
+                  className="pointer-events-none absolute"
+                  style={{
+                    left: c.left,
+                    top: c.top,
+                    height: c.size,
+                    width: c.size,
+                  }}
+                  initial={{ opacity: 0, scale: 0.2, x: 0, y: 0 }}
+                  animate={
+                    reduced
+                      ? { opacity: 1, scale: 1 }
+                      : { opacity: [0, 1, 1, 0], scale: 1, x: c.dx, y: c.dy }
+                  }
+                  exit={{ opacity: 0 }}
+                  transition={{
+                    duration: reduced ? 0.2 : 1.3,
+                    delay: reduced ? 0 : c.delay,
+                    ease: 'easeOut',
+                  }}
                 >
                   <FxOverlay kind="coeur" />
                 </motion.div>
-                <motion.div
-                  key="coeur-2"
-                  className="pointer-events-none absolute left-1/2 top-1 h-3 w-3"
-                  initial={{ opacity: 0, scale: 0.3, y: 4 }}
-                  animate={{ opacity: 1, scale: 1, y: -8 }}
-                  exit={{ opacity: 0, y: -14 }}
-                  transition={{ duration: 0.5, delay: 0.08, ease: 'easeOut' }}
-                >
-                  <FxOverlay kind="coeur" />
-                </motion.div>
-              </>
-            )}
+              ))}
           </AnimatePresence>
 
           <AnimatePresence>
@@ -185,7 +201,9 @@ export function Mascotte() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                {fx.kind !== 'levelup' && <FxOverlay kind={fx.kind} />}
+                {fx.kind !== 'levelup' && fx.kind !== 'coeurs' && (
+                  <FxOverlay kind={fx.kind} />
+                )}
 
                 {fx.levelup &&
                   !reduced &&
