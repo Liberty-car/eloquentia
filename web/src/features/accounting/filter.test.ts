@@ -7,6 +7,7 @@ const base: ComptaFiltres = {
   type: 'tous',
   categorie: 'toutes',
   nature: 'toutes',
+  evenement: 'tous',
 };
 
 const mvts: Mouvement[] = [
@@ -36,6 +37,7 @@ const mvts: Mouvement[] = [
     date: '2027-01-15',
     categorie: 'subventions',
     previsionnel: true,
+    evenementId: 'e8',
   },
 ];
 
@@ -63,6 +65,16 @@ describe('filterMouvements', () => {
   it('filtre par nature prévisionnel uniquement', () => {
     const r = filterMouvements(mvts, { ...base, nature: 'previsionnel' });
     expect(r.map((m) => m.id)).toEqual(['c']);
+  });
+
+  it('filtre par événement précis', () => {
+    const r = filterMouvements(mvts, { ...base, evenement: 'e8' });
+    expect(r.map((m) => m.id)).toEqual(['c']);
+  });
+
+  it('filtre les mouvements sans événement', () => {
+    const r = filterMouvements(mvts, { ...base, evenement: 'aucun' });
+    expect(r.map((m) => m.id)).toEqual(['a', 'b']);
   });
 
   it('renvoie tout sans filtre', () => {

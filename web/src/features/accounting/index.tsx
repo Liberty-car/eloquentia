@@ -20,6 +20,7 @@ const FILTRES_INITIAUX: ComptaFiltres = {
   type: 'tous',
   categorie: 'toutes',
   nature: 'toutes',
+  evenement: 'tous',
 };
 
 export default function AccountingPage() {
@@ -134,13 +135,18 @@ export default function AccountingPage() {
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <ComptaViewSwitcher value={vue} onChange={setVue} />
         {vue === 'liste' && (
-          <ComptaFilters filtres={filtres} onChange={setFiltres} />
+          <ComptaFilters
+            filtres={filtres}
+            evenements={evenements}
+            onChange={setFiltres}
+          />
         )}
       </div>
 
       {vue === 'liste' && (
         <MouvementListView
           mouvements={filtres_appliques}
+          evenements={evenements}
           onSelect={(m) => setFiche({ open: true, mouvement: m })}
         />
       )}

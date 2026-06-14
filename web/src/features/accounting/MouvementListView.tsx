@@ -1,3 +1,4 @@
+import { CalendarDays } from 'lucide-react';
 import { Badge } from '../../components/ui/Badge';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { cn } from '../../lib/cn';
@@ -12,11 +13,14 @@ function formatDateCourte(iso: string): string {
 
 export function MouvementListView({
   mouvements,
+  evenements = [],
   onSelect,
 }: {
   mouvements: Mouvement[];
+  evenements?: { id: string; titre: string }[];
   onSelect: (mouvement: Mouvement) => void;
 }) {
+  const titreParEvenement = new Map(evenements.map((e) => [e.id, e.titre]));
   if (mouvements.length === 0) {
     return (
       <EmptyState
@@ -51,9 +55,19 @@ export function MouvementListView({
                   {formatDateCourte(m.date)}
                 </td>
                 <td className="px-4 py-3">
-                  <span className="flex items-center gap-2">
-                    <span className="font-medium text-encre">{m.libelle}</span>
-                    {m.previsionnel && <Badge tone="jaune">Prévision</Badge>}
+                  <span className="flex flex-col gap-1">
+                    <span className="flex items-center gap-2">
+                      <span className="font-medium text-encre">
+                        {m.libelle}
+                      </span>
+                      {m.previsionnel && <Badge tone="jaune">Prévision</Badge>}
+                    </span>
+                    {m.evenementId && titreParEvenement.has(m.evenementId) && (
+                      <span className="inline-flex w-fit items-center gap-1 rounded-full bg-scene px-2 py-0.5 text-[11px] font-medium text-encre-2">
+                        <CalendarDays size={11} />
+                        {titreParEvenement.get(m.evenementId)}
+                      </span>
+                    )}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-encre-2">

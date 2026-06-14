@@ -13,9 +13,11 @@ const NATURE_OPTIONS: { id: NatureFiltre; label: string }[] = [
 
 export function ComptaFilters({
   filtres,
+  evenements,
   onChange,
 }: {
   filtres: ComptaFiltres;
+  evenements: { id: string; titre: string }[];
   onChange: (filtres: ComptaFiltres) => void;
 }) {
   return (
@@ -81,6 +83,21 @@ export function ComptaFilters({
         {CATEGORIES.map((c) => (
           <option key={c} value={c}>
             {CATEGORIE_LABELS[c]}
+          </option>
+        ))}
+      </select>
+
+      <select
+        value={filtres.evenement}
+        aria-label="Filtrer par événement"
+        onChange={(e) => onChange({ ...filtres, evenement: e.target.value })}
+        className="h-9 rounded-[10px] border border-trait bg-scene px-3 text-sm text-encre focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus/30"
+      >
+        <option value="tous">Tous les événements</option>
+        <option value="aucun">Sans événement</option>
+        {evenements.map((ev) => (
+          <option key={ev.id} value={ev.id}>
+            {ev.titre}
           </option>
         ))}
       </select>
