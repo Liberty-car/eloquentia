@@ -61,8 +61,7 @@ export function CrmFilters({
             {ETAPE_LABELS[etape]}
           </button>
         ))}
-      </div>
-      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="mx-1 h-5 w-px bg-trait-fort" aria-hidden="true" />
         {BADGES.map((badge) => (
           <button
             key={badge}
