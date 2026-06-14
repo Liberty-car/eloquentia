@@ -1,5 +1,6 @@
 import { EmptyState } from '../../components/ui/EmptyState';
 import { Badge } from '../../components/ui/Badge';
+import { cn } from '../../lib/cn';
 import { formatDateFr } from './dates';
 import { STATUT_LABELS, type Evenement, type Tache } from './types';
 
@@ -53,7 +54,12 @@ export function AgendaView({
               ? onSelectEvenement(el.evenement)
               : onSelectTache(el.tache)
           }
-          className="flex items-center justify-between gap-3 rounded-xl border border-trait bg-papier px-4 py-3 text-left transition-colors hover:bg-scene"
+          className={cn(
+            'flex items-center justify-between gap-3 rounded-xl border-y border-r border-l-4 border-y-trait border-r-trait bg-papier px-4 py-3 text-left transition-colors hover:bg-scene',
+            el.type === 'evenement'
+              ? 'border-l-velours'
+              : 'border-l-projecteur',
+          )}
         >
           <span className="flex items-center gap-3">
             <span className="w-28 shrink-0 text-xs font-medium text-encre-3">
