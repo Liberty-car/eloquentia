@@ -112,4 +112,12 @@ describe('recalculer', () => {
     expect(reaction?.type).toBe('levelup');
     expect(state.journal[0]?.type).toBe('levelup');
   });
+
+  it('ne régresse jamais de stade même si les données disparaissent', () => {
+    const precedent = etat({ stade: 3, lastSeenCounts: ZERO });
+    const { state, reaction } = recalculer(vide(), TODAY, NOW, precedent);
+    expect(state.xp).toBe(0);
+    expect(state.stade).toBe(3); // figé, pas de retour au stade 1
+    expect(reaction).toBeNull();
+  });
 });

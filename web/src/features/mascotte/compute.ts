@@ -23,6 +23,7 @@ import type {
   HumeurBande,
   JournalEntry,
   Reaction,
+  Stade,
   StadeInfo,
 } from './types';
 
@@ -95,13 +96,11 @@ export function computeXp(data: DonneesMascotte, today: string): number {
   );
 }
 
-export function computeStade(xp: number): StadeInfo {
-  let courant = SEUILS_STADE[0]!;
-  for (const palier of SEUILS_STADE) {
-    if (xp >= palier.xp) courant = palier;
-    else break;
-  }
-  const idx = SEUILS_STADE.findIndex((p) => p.stade === courant.stade);
+// Détail d'un stade DONNÉ relativement à une XP (sert quand le stade est figé
+// par la règle de non-régression, indépendamment de l'XP courante).
+export function infoStade(stade: Stade, xp: number): StadeInfo {
+  const idx = SEUILS_STADE.findIndex((p) => p.stade === stade);
+  const courant = SEUILS_STADE[idx]!;
   const suivant = SEUILS_STADE[idx + 1] ?? null;
   const xpDansStade = xp - courant.xp;
   const xpStadeSuivant = suivant ? suivant.xp - courant.xp : null;
@@ -109,12 +108,22 @@ export function computeStade(xp: number): StadeInfo {
     ? clamp(xpDansStade / xpStadeSuivant, 0, 1)
     : 1;
   return {
-    stade: courant.stade,
+    stade,
     nom: courant.nom,
     xpDansStade,
     xpStadeSuivant,
     progressionStade,
   };
+}
+
+// Stade naturel correspondant à une XP (dernier palier atteint).
+export function computeStade(xp: number): StadeInfo {
+  let stade: Stade = SEUILS_STADE[0]!.stade;
+  for (const palier of SEUILS_STADE) {
+    if (xp >= palier.xp) stade = palier.stade;
+    else break;
+  }
+  return infoStade(stade, xp);
 }
 
 // --- Axe 2 : humeur ---

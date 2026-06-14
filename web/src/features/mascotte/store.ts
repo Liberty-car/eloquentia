@@ -7,6 +7,7 @@ import {
   computeStade,
   computeXp,
   diffEvents,
+  infoStade,
 } from './compute';
 import { JOURNAL_MAX } from './config';
 import type {
@@ -46,7 +47,14 @@ export function recalculer(
   precedent: MascotteState | null,
 ): { state: MascotteState; reaction: Reaction | null } {
   const xp = computeXp(data, today);
-  const stadeInfo = computeStade(xp);
+  const naturel = computeStade(xp);
+  // Non-régression : le stade ne redescend jamais sous celui déjà atteint
+  // (même si des données sont supprimées et que l'XP baisse).
+  const stade =
+    precedent && precedent.stade > naturel.stade
+      ? precedent.stade
+      : naturel.stade;
+  const stadeInfo = infoStade(stade, xp);
   const humeur = computeHumeur(data, today);
   const compteurs = computeCompteurs(data, today);
 
@@ -61,7 +69,7 @@ export function recalculer(
     reaction = diff.reaction;
 
     // Le passage de stade prime sur toute autre réaction.
-    if (stadeInfo.stade > precedent.stade) {
+    if (stade > precedent.stade) {
       reaction = {
         id: `levelup-${maintenant}`,
         type: 'levelup',
@@ -82,7 +90,7 @@ export function recalculer(
 
   const state: MascotteState = {
     xp,
-    stade: stadeInfo.stade,
+    stade,
     humeur,
     humeurBande: bandeHumeur(humeur),
     lastComputedAt: maintenant,

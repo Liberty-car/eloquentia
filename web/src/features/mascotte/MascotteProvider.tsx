@@ -11,7 +11,7 @@ import { contactsStore } from '../crm/store';
 import { evenementsStore, tachesStore } from '../calendar/store';
 import { mouvementsStore } from '../accounting/store';
 import { campagnesStore } from '../mail/store';
-import { computeStade, conseil, tachesEnRetard } from './compute';
+import { conseil, infoStade, tachesEnRetard } from './compute';
 import { BANDES, NOM } from './config';
 import { ecrireMascotte, lireMascotte, recalculer } from './store';
 import { MascotteContext, type MascotteContexte } from './useMascotte';
@@ -59,7 +59,7 @@ export function MascotteProvider({ children }: { children: ReactNode }) {
     ecrireMascotte(next);
     setState(next);
     if (r) setReaction(r);
-    const info = computeStade(next.xp);
+    const info = infoStade(next.stade, next.xp);
     setConseilTexte(
       conseil({
         humeurBande: next.humeurBande,
@@ -91,7 +91,7 @@ export function MascotteProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<MascotteContexte | null>(() => {
     if (!state) return null;
-    const info = computeStade(state.xp);
+    const info = infoStade(state.stade, state.xp);
     const bande = BANDES.find((b) => b.bande === state.humeurBande);
     return {
       nom: NOM,
