@@ -7,6 +7,11 @@ function initiales(contact: Contact): string {
   return `${contact.prenom.charAt(0)}${contact.nom.charAt(0)}`.toUpperCase();
 }
 
+function formatDate(iso?: string): string {
+  if (!iso) return '-';
+  return new Date(iso).toLocaleDateString('fr-FR');
+}
+
 export function ContactCard({
   contact,
   onClick,
@@ -41,6 +46,16 @@ export function ContactCard({
           ))}
         </div>
       )}
+      <div className="mt-3 flex flex-col gap-0.5 text-xs text-encre-3">
+        <span>
+          Dernière interaction : {formatDate(contact.dateDerniereInteraction)}
+        </span>
+        {contact.prochaineRelance && (
+          <span className="text-velours">
+            Relance : {formatDate(contact.prochaineRelance)}
+          </span>
+        )}
+      </div>
     </Card>
   );
 }

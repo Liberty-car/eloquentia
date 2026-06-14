@@ -1,7 +1,7 @@
 # Eloquetia : spec fondations + design system + CRM (premier cycle)
 
 - Date : 2026-06-14
-- Statut : fondations et coquille implémentées ; CRM à venir
+- Statut : coquille + CRM coeur (liste/fiche/filtres) implémentés ; Kanban et import CSV à venir
 - Auteur : Anthony + Claude
 
 ## 1. Contexte et objectif

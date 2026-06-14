@@ -41,7 +41,7 @@ export default function CrmPage() {
     rafraichir();
   }, [rafraichir]);
 
-  const filtres_resultat = useMemo(
+  const resultatsFiltres = useMemo(
     () => filterContacts(contacts, filtres),
     [contacts, filtres],
   );
@@ -109,7 +109,7 @@ export default function CrmPage() {
     rafraichir();
   }
 
-  const vide_total = contacts.length === 0;
+  const aucunContact = contacts.length === 0;
 
   return (
     <>
@@ -143,7 +143,7 @@ export default function CrmPage() {
 
       <CrmFilters value={filtres} onChange={setFiltres} />
 
-      {vide_total ? (
+      {aucunContact ? (
         <EmptyState
           title="Aucun contact"
           description="Active les données de démo ou crée ton premier contact."
@@ -153,16 +153,16 @@ export default function CrmPage() {
             </Button>
           }
         />
-      ) : filtres_resultat.length === 0 ? (
+      ) : resultatsFiltres.length === 0 ? (
         <EmptyState
           title="Aucun résultat"
           description="Aucun contact ne correspond aux filtres."
         />
       ) : vue === 'liste' ? (
-        <ContactListView contacts={filtres_resultat} onSelect={ouvrirEdition} />
+        <ContactListView contacts={resultatsFiltres} onSelect={ouvrirEdition} />
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filtres_resultat.map((contact) => (
+          {resultatsFiltres.map((contact) => (
             <ContactCard
               key={contact.id}
               contact={contact}
