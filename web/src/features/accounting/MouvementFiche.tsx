@@ -29,7 +29,8 @@ function valeurs(
     libelle: mouvement?.libelle ?? '',
     montant: mouvement ? String(mouvement.montant) : '',
     date: mouvement?.date ?? dateInitiale,
-    categorie: mouvement?.categorie ?? 'dons',
+    categorie:
+      mouvement?.categorie ?? categoriesPour('revenu')[0]?.id ?? 'autre-revenu',
     previsionnel: mouvement?.previsionnel ?? previsionnelInitial,
     evenementId: mouvement?.evenementId ?? evenementInitial,
     justificatif: mouvement?.justificatif ?? '',
