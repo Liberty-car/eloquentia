@@ -16,6 +16,8 @@ import { CrmDashboardView } from './CrmDashboardView';
 import { filterContacts, type ContactFilters } from './filter';
 import type { Vue } from './views';
 import type { Contact, ContactFormValues, Etape } from './types';
+import { ContactImport } from './ContactImport';
+import type { ImportRow } from './import';
 
 function aujourdhui(): string {
   return new Date().toISOString().slice(0, 10);
@@ -36,6 +38,7 @@ export default function CrmPage() {
   const [vue, setVue] = useState<Vue>('cartes');
   const [ficheOuverte, setFicheOuverte] = useState(false);
   const [contactEdite, setContactEdite] = useState<Contact | null>(null);
+  const [importOuvert, setImportOuvert] = useState(false);
 
   const rafraichir = useCallback(() => {
     void contactsStore.list().then(setContacts);
@@ -126,6 +129,20 @@ export default function CrmPage() {
     rafraichir();
   }
 
+  async function importer(rows: ImportRow[]) {
+    for (const row of rows) {
+      await contactsStore.create({
+        ...row,
+        badges: [],
+        etape: 'a_contacter',
+        source: 'import',
+        dateCreation: aujourdhui(),
+      });
+    }
+    setImportOuvert(false);
+    rafraichir();
+  }
+
   const aucunContact = contacts.length === 0;
   const tableau = vue === 'tableau';
 
@@ -189,6 +206,9 @@ export default function CrmPage() {
         actions={
           <>
             <DemoDataToggle store={contactsStore} onChange={rafraichir} />
+            <Button variant="outline" onClick={() => setImportOuvert(true)}>
+              Importer
+            </Button>
             <Button variant="primary" onClick={ouvrirCreation}>
               Nouveau contact
             </Button>
@@ -222,6 +242,11 @@ export default function CrmPage() {
         onClose={() => setFicheOuverte(false)}
         onSave={enregistrer}
         onDelete={supprimer}
+      />
+      <ContactImport
+        open={importOuvert}
+        onClose={() => setImportOuvert(false)}
+        onImport={importer}
       />
     </>
   );
