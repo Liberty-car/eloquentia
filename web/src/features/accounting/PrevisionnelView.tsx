@@ -102,7 +102,11 @@ export function PrevisionnelView({ mouvements }: { mouvements: Mouvement[] }) {
                 minTickGap={24}
               />
               <YAxis tick={{ fontSize: 11 }} width={70} />
-              <Tooltip formatter={(v: number) => formatEuros(v)} />
+              <Tooltip
+                formatter={(v) =>
+                  typeof v === 'number' ? formatEuros(v) : String(v)
+                }
+              />
               <Line
                 type="monotone"
                 dataKey="cumul"

@@ -1,13 +1,160 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '../../components/ui/PageHeader';
+import { Button } from '../../components/ui/Button';
+import { cn } from '../../lib/cn';
+import { mouvementsStore } from './store';
+import { evenementsStore } from '../calendar/store';
+import { ComptaViewSwitcher } from './ComptaViewSwitcher';
+import { ComptaFilters } from './ComptaFilters';
+import { MouvementListView } from './MouvementListView';
+import { ComptaDashboardView } from './ComptaDashboardView';
+import { PrevisionnelView } from './PrevisionnelView';
+import { MouvementFiche, type OptionEvenement } from './MouvementFiche';
+import { filterMouvements, type ComptaFiltres } from './filter';
+import { mouvementsVersCsv, telechargerCsv } from './export';
+import type { Mouvement, MouvementFormValues } from './types';
+import type { VueCompta } from './views';
+
+const FILTRES_INITIAUX: ComptaFiltres = {
+  recherche: '',
+  type: 'tous',
+  categorie: 'toutes',
+};
 
 export default function AccountingPage() {
+  const [vue, setVue] = useState<VueCompta>('liste');
+  const [mouvements, setMouvements] = useState<Mouvement[]>([]);
+  const [evenements, setEvenements] = useState<OptionEvenement[]>([]);
+  const [demo, setDemo] = useState(false);
+  const [filtres, setFiltres] = useState<ComptaFiltres>(FILTRES_INITIAUX);
+  const [fiche, setFiche] = useState<{
+    open: boolean;
+    mouvement: Mouvement | null;
+  }>({ open: false, mouvement: null });
+
+  const rafraichir = useCallback(() => {
+    void mouvementsStore.list().then(setMouvements);
+    void mouvementsStore.isSeeded().then(setDemo);
+    void evenementsStore
+      .list()
+      .then((evs) =>
+        setEvenements(evs.map((e) => ({ id: e.id, titre: e.titre }))),
+      );
+  }, []);
+
+  useEffect(() => {
+    rafraichir();
+  }, [rafraichir]);
+
+  async function basculerDemo() {
+    if (demo) await mouvementsStore.clear();
+    else await mouvementsStore.seed();
+    rafraichir();
+  }
+
+  function nouveau() {
+    setFiche({ open: true, mouvement: null });
+  }
+
+  async function enregistrer(values: MouvementFormValues) {
+    const montant = Math.max(0, Number(values.montant) || 0);
+    const opts: Partial<Pick<Mouvement, 'evenementId' | 'justificatif'>> = {};
+    if (values.evenementId) opts.evenementId = values.evenementId;
+    const justificatif = values.justificatif.trim();
+    if (justificatif) opts.justificatif = justificatif;
+    const base = {
+      type: values.type,
+      libelle: values.libelle.trim(),
+      montant,
+      date: values.date,
+      categorie: values.categorie,
+      previsionnel: values.previsionnel,
+      ...opts,
+    };
+    if (fiche.mouvement) {
+      await mouvementsStore.replace(fiche.mouvement.id, base);
+    } else {
+      await mouvementsStore.create(base);
+    }
+    setFiche({ open: false, mouvement: null });
+    rafraichir();
+  }
+
+  async function supprimer() {
+    if (fiche.mouvement) await mouvementsStore.remove(fiche.mouvement.id);
+    setFiche({ open: false, mouvement: null });
+    rafraichir();
+  }
+
+  function exporter() {
+    telechargerCsv('comptabilite-eloquetia.csv', mouvementsVersCsv(mouvements));
+  }
+
+  const filtres_appliques = useMemo(
+    () => filterMouvements(mouvements, filtres),
+    [mouvements, filtres],
+  );
+
   return (
     <>
       <PageHeader
         title="Comptabilité"
         description="Achats, revenus et prévisionnel."
+        actions={
+          <>
+            <button
+              type="button"
+              onClick={() => void basculerDemo()}
+              className={cn(
+                'inline-flex h-9 items-center gap-2 rounded-full border px-3 text-sm font-medium transition-colors',
+                demo
+                  ? 'border-gel-rose bg-rose-brume text-velours'
+                  : 'border-trait-fort bg-papier text-encre-2',
+              )}
+            >
+              <span
+                className={cn(
+                  'h-2 w-2 rounded-full',
+                  demo ? 'bg-gel-rose' : 'bg-encre-4',
+                )}
+              />
+              Données de démo {demo ? 'activées' : 'désactivées'}
+            </button>
+            <Button variant="outline" onClick={exporter}>
+              Exporter (Excel/CSV)
+            </Button>
+            <Button variant="primary" onClick={nouveau}>
+              Nouveau mouvement
+            </Button>
+          </>
+        }
       />
-      <p className="text-sm text-encre-3">Module à implémenter.</p>
+
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <ComptaViewSwitcher value={vue} onChange={setVue} />
+        {vue === 'liste' && (
+          <ComptaFilters filtres={filtres} onChange={setFiltres} />
+        )}
+      </div>
+
+      {vue === 'liste' && (
+        <MouvementListView
+          mouvements={filtres_appliques}
+          onSelect={(m) => setFiche({ open: true, mouvement: m })}
+        />
+      )}
+      {vue === 'dashboard' && <ComptaDashboardView mouvements={mouvements} />}
+      {vue === 'previsionnel' && <PrevisionnelView mouvements={mouvements} />}
+
+      <MouvementFiche
+        open={fiche.open}
+        mouvement={fiche.mouvement}
+        dateInitiale="2026-06-15"
+        evenements={evenements}
+        onClose={() => setFiche({ open: false, mouvement: null })}
+        onSave={enregistrer}
+        onDelete={supprimer}
+      />
     </>
   );
 }

@@ -112,7 +112,9 @@ export function ComptaDashboardView({
                 <XAxis dataKey="nom" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
                 <Tooltip
-                  formatter={(v: number) => formatEuros(v)}
+                  formatter={(v) =>
+                    typeof v === 'number' ? formatEuros(v) : String(v)
+                  }
                   cursor={{ fill: 'rgba(31,41,55,0.04)' }}
                 />
                 <Bar dataKey="valeur" radius={[6, 6, 0, 0]} fill="#DB6A8F" />
@@ -131,7 +133,9 @@ export function ComptaDashboardView({
                 <XAxis dataKey="nom" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
                 <Tooltip
-                  formatter={(v: number) => formatEuros(v)}
+                  formatter={(v) =>
+                    typeof v === 'number' ? formatEuros(v) : String(v)
+                  }
                   cursor={{ fill: 'rgba(31,41,55,0.04)' }}
                 />
                 <Bar dataKey="valeur" radius={[6, 6, 0, 0]} fill="#F5DF4D" />
