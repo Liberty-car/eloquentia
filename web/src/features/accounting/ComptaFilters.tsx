@@ -1,0 +1,61 @@
+import { CATEGORIE_LABELS, TYPES_MOUVEMENT, TYPE_LABELS } from './types';
+import type { ComptaFiltres } from './filter';
+import { cn } from '../../lib/cn';
+
+const TYPE_OPTIONS = ['tous', ...TYPES_MOUVEMENT] as const;
+const CATEGORIES = Object.keys(CATEGORIE_LABELS);
+
+export function ComptaFilters({
+  filtres,
+  onChange,
+}: {
+  filtres: ComptaFiltres;
+  onChange: (filtres: ComptaFiltres) => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <input
+        type="search"
+        value={filtres.recherche}
+        onChange={(e) => onChange({ ...filtres, recherche: e.target.value })}
+        placeholder="Rechercher un libellé"
+        className="h-9 w-56 rounded-[10px] border border-trait bg-scene px-3 text-sm text-encre placeholder:text-encre-4 focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus/30"
+      />
+
+      <span className="mx-1 h-5 w-px bg-trait-fort" />
+
+      <div className="inline-flex items-center gap-1">
+        {TYPE_OPTIONS.map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => onChange({ ...filtres, type: t })}
+            className={cn(
+              'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
+              filtres.type === t
+                ? 'border-gel-rose bg-rose-brume text-velours'
+                : 'border-trait-fort bg-papier text-encre-2 hover:bg-scene',
+            )}
+          >
+            {t === 'tous' ? 'Tous' : TYPE_LABELS[t]}
+          </button>
+        ))}
+      </div>
+
+      <span className="mx-1 h-5 w-px bg-trait-fort" />
+
+      <select
+        value={filtres.categorie}
+        onChange={(e) => onChange({ ...filtres, categorie: e.target.value })}
+        className="h-9 rounded-[10px] border border-trait bg-scene px-3 text-sm text-encre focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus/30"
+      >
+        <option value="toutes">Toutes les catégories</option>
+        {CATEGORIES.map((c) => (
+          <option key={c} value={c}>
+            {CATEGORIE_LABELS[c]}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
