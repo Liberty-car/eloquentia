@@ -1,8 +1,9 @@
+import { Mail, Phone } from 'lucide-react';
 import { Avatar } from '../../components/ui/Avatar';
 import { Badge } from '../../components/ui/Badge';
 import { Card } from '../../components/ui/Card';
 import { libelleBadge, toneBadge } from './badges';
-import { type Contact } from './types';
+import { ETAPE_LABELS, type Contact } from './types';
 
 function initiales(contact: Contact): string {
   return `${contact.prenom.charAt(0)}${contact.nom.charAt(0)}`.toUpperCase();
@@ -31,9 +32,11 @@ export function ContactCard({
           <p className="truncate font-semibold text-encre">
             {contact.prenom} {contact.nom}
           </p>
-          {contact.organisation && (
+          {(contact.fonction || contact.organisation) && (
             <p className="truncate text-xs text-encre-3">
-              {contact.organisation}
+              {[contact.fonction, contact.organisation]
+                .filter(Boolean)
+                .join(' · ')}
             </p>
           )}
         </div>
@@ -47,7 +50,24 @@ export function ContactCard({
           ))}
         </div>
       )}
+      {(contact.email || contact.telephone) && (
+        <div className="mt-3 flex flex-col gap-0.5 text-xs text-encre-2">
+          {contact.email && (
+            <span className="inline-flex items-center gap-1.5 truncate">
+              <Mail size={12} className="shrink-0" />
+              {contact.email}
+            </span>
+          )}
+          {contact.telephone && (
+            <span className="inline-flex items-center gap-1.5">
+              <Phone size={12} className="shrink-0" />
+              {contact.telephone}
+            </span>
+          )}
+        </div>
+      )}
       <div className="mt-3 flex flex-col gap-0.5 text-xs text-encre-3">
+        <span>Étape : {ETAPE_LABELS[contact.etape]}</span>
         <span>
           Dernière interaction : {formatDate(contact.dateDerniereInteraction)}
         </span>

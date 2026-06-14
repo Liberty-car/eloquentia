@@ -1,5 +1,7 @@
+import { CalendarDays } from 'lucide-react';
 import { Badge } from '../../components/ui/Badge';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { formatDateFr } from './dates';
 import { MEMBRES, PRIORITE_LABELS, STATUT_LABELS, type Tache } from './types';
 
 export function TachesParMembreView({
@@ -44,7 +46,13 @@ export function TachesParMembreView({
                 <span className="text-sm font-medium text-encre">
                   {tache.titre}
                 </span>
-                <span className="flex gap-1.5">
+                {tache.echeance && (
+                  <span className="inline-flex items-center gap-1 text-xs text-encre-3">
+                    <CalendarDays size={12} />
+                    {formatDateFr(tache.echeance)}
+                  </span>
+                )}
+                <span className="flex flex-wrap gap-1.5">
                   <Badge tone="jaune">{STATUT_LABELS[tache.statut]}</Badge>
                   <Badge tone="rose">{PRIORITE_LABELS[tache.priorite]}</Badge>
                 </span>

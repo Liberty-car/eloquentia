@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Button } from '../../components/ui/Button';
@@ -7,12 +7,19 @@ import { cn } from '../../lib/cn';
 import { evenementsStore, tachesStore } from './store';
 import { MonthCalendar } from './MonthCalendar';
 import { AgendaView } from './AgendaView';
+import { CalendarFilters } from './CalendarFilters';
 import { TachesParMembreView } from './TachesParMembreView';
 import { TachesStatutView } from './TachesStatutView';
 import { CalViewSwitcher } from './CalViewSwitcher';
 import { EvenementFiche } from './EvenementFiche';
 import { TacheFiche } from './TacheFiche';
 import { aujourdhuiIso, NOMS_MOIS } from './grille';
+import {
+  FILTRES_CAL_INITIAUX,
+  filtrerEvenements,
+  filtrerTaches,
+  type CalendarFiltres,
+} from './filter';
 import type { VueCal } from './views';
 import type {
   Evenement,
@@ -35,6 +42,8 @@ export default function CalendarPage() {
   const [evenements, setEvenements] = useState<Evenement[]>([]);
   const [taches, setTaches] = useState<Tache[]>([]);
   const [demo, setDemo] = useState(false);
+  const [filtresCal, setFiltresCal] =
+    useState<CalendarFiltres>(FILTRES_CAL_INITIAUX);
 
   const [dateChoisie, setDateChoisie] = useState(aujourdhuiIso());
   const [chooserOuvert, setChooserOuvert] = useState(false);
@@ -169,6 +178,15 @@ export default function CalendarPage() {
     setEvFiche({ open: true, evenement: e });
   const selectTache = (t: Tache) => setTFiche({ open: true, tache: t });
 
+  const evenementsAgenda = useMemo(
+    () => filtrerEvenements(evenements, filtresCal),
+    [evenements, filtresCal],
+  );
+  const tachesAgenda = useMemo(
+    () => filtrerTaches(taches, filtresCal),
+    [taches, filtresCal],
+  );
+
   return (
     <>
       <PageHeader
@@ -252,12 +270,16 @@ export default function CalendarPage() {
       )}
 
       {vue === 'agenda' && (
-        <AgendaView
-          evenements={evenements}
-          taches={taches}
-          onSelectEvenement={selectEvenement}
-          onSelectTache={selectTache}
-        />
+        <div className="flex flex-col gap-4">
+          <CalendarFilters filtres={filtresCal} onChange={setFiltresCal} />
+          <AgendaView
+            evenements={evenementsAgenda}
+            taches={tachesAgenda}
+            onSelectEvenement={selectEvenement}
+            onSelectTache={selectTache}
+            resetKey={JSON.stringify(filtresCal)}
+          />
+        </div>
       )}
 
       {vue === 'membres' && (

@@ -8,8 +8,10 @@ import {
   useSensors,
   type DragEndEvent,
 } from '@dnd-kit/core';
+import { CalendarDays, User } from 'lucide-react';
 import { Badge } from '../../components/ui/Badge';
 import { cn } from '../../lib/cn';
+import { formatDateFr } from './dates';
 import {
   PRIORITE_LABELS,
   STATUTS,
@@ -60,8 +62,17 @@ function CarteTache({
       <p className="text-sm font-medium text-encre">{tache.titre}</p>
       <div className="mt-2 flex flex-wrap items-center gap-1.5">
         <Badge tone="rose">{PRIORITE_LABELS[tache.priorite]}</Badge>
-        <span className="text-xs text-encre-3">{tache.membre}</span>
+        <span className="inline-flex items-center gap-1 text-xs text-encre-3">
+          <User size={12} />
+          {tache.membre}
+        </span>
       </div>
+      {tache.echeance && (
+        <p className="mt-1.5 inline-flex items-center gap-1 text-xs text-encre-3">
+          <CalendarDays size={12} />
+          {formatDateFr(tache.echeance)}
+        </p>
+      )}
     </div>
   );
 }

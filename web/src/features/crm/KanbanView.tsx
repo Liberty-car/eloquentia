@@ -71,9 +71,11 @@ function KanbanCard({
           <p className="truncate text-sm font-semibold text-encre">
             {contact.prenom} {contact.nom}
           </p>
-          {contact.organisation && (
+          {(contact.fonction || contact.organisation) && (
             <p className="truncate text-xs text-encre-3">
-              {contact.organisation}
+              {[contact.fonction, contact.organisation]
+                .filter(Boolean)
+                .join(' · ')}
             </p>
           )}
         </div>
