@@ -41,57 +41,56 @@ export function MonthCalendar({
           const tJour = taches.filter((t) => t.echeance === jour.iso);
           const estAujourdhui = jour.iso === aujourdhui;
           return (
-            <button
+            <div
               key={jour.iso}
-              type="button"
-              onClick={() => onJourClic(jour.iso)}
               className={cn(
-                'flex min-h-24 flex-col gap-1 border-b border-r border-trait p-1.5 text-left align-top',
+                'relative min-h-24 border-b border-r border-trait',
                 !jour.dansLeMois && 'bg-scene',
               )}
             >
-              <span
-                className={cn(
-                  'inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold',
-                  jour.dansLeMois ? 'text-encre' : 'text-encre-4',
-                  estAujourdhui && 'bg-gel-rose text-white',
-                )}
-              >
-                {jour.jour}
-              </span>
-              {evJour.map((e) => (
+              {/* Couche de fond cliquable (ajout sur ce jour), sans imbriquer d'interactifs. */}
+              <button
+                type="button"
+                aria-label={`Ajouter le ${jour.iso}`}
+                onClick={() => onJourClic(jour.iso)}
+                className="absolute inset-0 h-full w-full hover:bg-scene"
+              />
+              <div className="pointer-events-none relative flex flex-col gap-1 p-1.5">
                 <span
-                  key={e.id}
-                  role="button"
-                  tabIndex={0}
-                  onClick={(ev) => {
-                    ev.stopPropagation();
-                    onSelectEvenement(e);
-                  }}
-                  className="truncate rounded bg-rose-brume px-1.5 py-0.5 text-[11px] font-medium text-velours"
-                >
-                  {e.heure ? <span>{e.heure} </span> : null}
-                  {e.titre}
-                </span>
-              ))}
-              {tJour.map((t) => (
-                <span
-                  key={t.id}
-                  role="button"
-                  tabIndex={0}
-                  onClick={(ev) => {
-                    ev.stopPropagation();
-                    onSelectTache(t);
-                  }}
                   className={cn(
-                    'truncate rounded bg-jaune-brume px-1.5 py-0.5 text-[11px] font-medium text-[#9a7b16]',
-                    t.statut === 'fait' && 'line-through opacity-60',
+                    'inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold',
+                    jour.dansLeMois ? 'text-encre' : 'text-encre-4',
+                    estAujourdhui && 'bg-gel-rose text-white',
                   )}
                 >
-                  {t.titre}
+                  {jour.jour}
                 </span>
-              ))}
-            </button>
+                {evJour.map((e) => (
+                  <button
+                    key={e.id}
+                    type="button"
+                    onClick={() => onSelectEvenement(e)}
+                    className="pointer-events-auto truncate rounded bg-rose-brume px-1.5 py-0.5 text-left text-[11px] font-medium text-velours"
+                  >
+                    {e.heure ? <span>{e.heure} </span> : null}
+                    {e.titre}
+                  </button>
+                ))}
+                {tJour.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => onSelectTache(t)}
+                    className={cn(
+                      'pointer-events-auto truncate rounded bg-jaune-brume px-1.5 py-0.5 text-left text-[11px] font-medium text-[#9a7b16]',
+                      t.statut === 'fait' && 'line-through opacity-60',
+                    )}
+                  >
+                    {t.titre}
+                  </button>
+                ))}
+              </div>
+            </div>
           );
         })}
       </div>
