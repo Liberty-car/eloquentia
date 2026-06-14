@@ -63,7 +63,7 @@ export function createCollectionStore<T extends Identifiable>(
       if (index === -1) {
         throw new Error(`Élément introuvable : ${id}`);
       }
-      const updated = { ...items[index], ...patch };
+      const updated = { ...items[index], ...patch } as unknown as T;
       items[index] = updated;
       writeRaw(key, items);
       return updated;
