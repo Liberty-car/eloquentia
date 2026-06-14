@@ -18,12 +18,23 @@ describe('CrmPage', () => {
 
   it('ouvre la fiche de création via "Nouveau contact"', async () => {
     render(<CrmPage />);
-    // A l'etat vide, le bouton apparait dans l'en-tete ET dans l'EmptyState : on prend le premier.
     fireEvent.click(
       screen.getAllByRole('button', { name: 'Nouveau contact' })[0]!,
     );
     expect(
       await screen.findByText('Nouveau contact', { selector: 'h2' }),
     ).toBeInTheDocument();
+  });
+
+  it('bascule sur le tableau de bord', async () => {
+    render(<CrmPage />);
+    fireEvent.click(screen.getByRole('button', { name: /Données de démo/ }));
+    await waitFor(() =>
+      expect(screen.getByText('Lucie Martin')).toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Tableau de bord' }));
+    expect(await screen.findByText('Contacts')).toBeInTheDocument();
+    expect(screen.getByTestId('kpi-contacts')).toHaveTextContent('20');
   });
 });

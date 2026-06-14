@@ -8,10 +8,14 @@ import { ContactCard } from './ContactCard';
 import { ContactListView } from './ContactListView';
 import { ContactFiche } from './ContactFiche';
 import { CrmFilters } from './CrmFilters';
+import { CrmViewSwitcher } from './CrmViewSwitcher';
+import { KanbanView } from './KanbanView';
+import { GroupedByBadgeView } from './GroupedByBadgeView';
+import { RelancesView } from './RelancesView';
+import { CrmDashboardView } from './CrmDashboardView';
 import { filterContacts, type ContactFilters } from './filter';
-import type { Contact, ContactFormValues } from './types';
-
-type Vue = 'cartes' | 'liste';
+import type { Vue } from './views';
+import type { Contact, ContactFormValues, Etape } from './types';
 
 function aujourdhui(): string {
   return new Date().toISOString().slice(0, 10);
@@ -56,15 +60,18 @@ export default function CrmPage() {
     setFicheOuverte(true);
   }
 
+  async function changerEtape(id: string, etape: Etape) {
+    await contactsStore.update(id, { etape });
+    rafraichir();
+  }
+
   async function enregistrer(values: ContactFormValues) {
-    // Champs requis (toujours presents).
     const requis = {
       prenom: values.prenom.trim(),
       nom: values.nom.trim(),
       etape: values.etape,
       badges: values.badges,
     };
-    // Champs optionnels : inclus uniquement quand non vides (exactOptionalPropertyTypes).
     const opts: Partial<
       Pick<
         Contact,
@@ -110,6 +117,59 @@ export default function CrmPage() {
   }
 
   const aucunContact = contacts.length === 0;
+  const tableau = vue === 'tableau';
+
+  function rendreVue() {
+    if (vue === 'tableau') {
+      return <CrmDashboardView contacts={contacts} />;
+    }
+    if (resultatsFiltres.length === 0) {
+      return (
+        <EmptyState
+          title="Aucun résultat"
+          description="Aucun contact ne correspond aux filtres."
+        />
+      );
+    }
+    if (vue === 'liste') {
+      return (
+        <ContactListView contacts={resultatsFiltres} onSelect={ouvrirEdition} />
+      );
+    }
+    if (vue === 'kanban') {
+      return (
+        <KanbanView
+          contacts={resultatsFiltres}
+          onChangeEtape={changerEtape}
+          onSelect={ouvrirEdition}
+        />
+      );
+    }
+    if (vue === 'badges') {
+      return (
+        <GroupedByBadgeView
+          contacts={resultatsFiltres}
+          onSelect={ouvrirEdition}
+        />
+      );
+    }
+    if (vue === 'relances') {
+      return (
+        <RelancesView contacts={resultatsFiltres} onSelect={ouvrirEdition} />
+      );
+    }
+    return (
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {resultatsFiltres.map((contact) => (
+          <ContactCard
+            key={contact.id}
+            contact={contact}
+            onClick={() => ouvrirEdition(contact)}
+          />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <>
@@ -126,22 +186,11 @@ export default function CrmPage() {
         }
       />
 
-      <div className="mb-4 flex items-center gap-1.5">
-        <Button
-          variant={vue === 'cartes' ? 'primary' : 'ghost'}
-          onClick={() => setVue('cartes')}
-        >
-          Cartes
-        </Button>
-        <Button
-          variant={vue === 'liste' ? 'primary' : 'ghost'}
-          onClick={() => setVue('liste')}
-        >
-          Liste
-        </Button>
+      <div className="mb-4">
+        <CrmViewSwitcher value={vue} onChange={setVue} />
       </div>
 
-      <CrmFilters value={filtres} onChange={setFiltres} />
+      {!tableau && <CrmFilters value={filtres} onChange={setFiltres} />}
 
       {aucunContact ? (
         <EmptyState
@@ -153,23 +202,8 @@ export default function CrmPage() {
             </Button>
           }
         />
-      ) : resultatsFiltres.length === 0 ? (
-        <EmptyState
-          title="Aucun résultat"
-          description="Aucun contact ne correspond aux filtres."
-        />
-      ) : vue === 'liste' ? (
-        <ContactListView contacts={resultatsFiltres} onSelect={ouvrirEdition} />
       ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {resultatsFiltres.map((contact) => (
-            <ContactCard
-              key={contact.id}
-              contact={contact}
-              onClick={() => ouvrirEdition(contact)}
-            />
-          ))}
-        </div>
+        rendreVue()
       )}
 
       <ContactFiche
