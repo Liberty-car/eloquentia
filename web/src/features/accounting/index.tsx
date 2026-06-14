@@ -237,6 +237,7 @@ export default function AccountingPage() {
           <MouvementListView
             mouvements={filtres_appliques}
             evenements={evenements}
+            resetKey={JSON.stringify(filtres)}
             titreVide={
               evenementSelectionne
                 ? 'Aucune ligne de budget'

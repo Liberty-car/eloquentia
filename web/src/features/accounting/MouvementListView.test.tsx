@@ -37,4 +37,27 @@ describe('MouvementListView', () => {
     render(<MouvementListView mouvements={[]} onSelect={() => {}} />);
     expect(screen.getByText('Aucun mouvement')).toBeInTheDocument();
   });
+
+  it('pagine au-delà de la taille de page et permet de naviguer', () => {
+    const nombreux: Mouvement[] = Array.from({ length: 12 }, (_, i) => ({
+      id: `m${i}`,
+      type: 'depense',
+      libelle: `Dépense ${i}`,
+      montant: 100,
+      date: '2026-06-10',
+      categorie: 'logistique',
+      previsionnel: false,
+    }));
+    render(<MouvementListView mouvements={nombreux} onSelect={() => {}} />);
+
+    // Page 1 : 10 lignes, la 11e (Dépense 10) n'est pas encore visible.
+    expect(screen.getByText('1-10 sur 12')).toBeInTheDocument();
+    expect(screen.getByText('Dépense 0')).toBeInTheDocument();
+    expect(screen.queryByText('Dépense 10')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText('Page suivante'));
+    expect(screen.getByText('11-12 sur 12')).toBeInTheDocument();
+    expect(screen.getByText('Dépense 10')).toBeInTheDocument();
+    expect(screen.queryByText('Dépense 0')).not.toBeInTheDocument();
+  });
 });

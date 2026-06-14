@@ -1,0 +1,146 @@
+{
+  "families": ["inter", "JetBrains Mono"],
+  "scale": {
+    "heading-1": {
+      "fontFamily": "inter",
+      "fontSize": "112px",
+      "fontWeight": "700",
+      "lineHeight": null,
+      "source": "css"
+    },
+    "heading-2": {
+      "fontFamily": "inter",
+      "fontSize": "80px",
+      "fontWeight": "700",
+      "lineHeight": null,
+      "source": "css"
+    },
+    "heading-3": {
+      "fontFamily": "inter",
+      "fontSize": "72px",
+      "fontWeight": "700",
+      "lineHeight": null,
+      "source": "css"
+    },
+    "body": {
+      "fontFamily": "JetBrains Mono",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "lineHeight": null,
+      "source": "css"
+    },
+    "caption": {
+      "fontFamily": "JetBrains Mono",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "lineHeight": null,
+      "source": "css"
+    },
+    "code": {
+      "fontFamily": "JetBrains Mono",
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": null,
+      "source": "css"
+    }
+  },
+  "fontFaces": [
+    {
+      "family": "JetBrains Mono",
+      "src": "https://attio.com/_next/static/media/13bf9871fe164e7f-s.0s19wthhh_6~m.woff2?dpl=dpl_AsUok5eHy36yBT8disTG2Ch1LHzt",
+      "format": "truetype",
+      "weight": "100"
+    },
+    {
+      "family": "JetBrains Mono",
+      "src": "https://attio.com/_next/static/media/cc545e633e20c56d-s.0dza.stei.9v7.woff2?dpl=dpl_AsUok5eHy36yBT8disTG2Ch1LHzt",
+      "format": "truetype",
+      "weight": "100"
+    },
+    {
+      "family": "JetBrains Mono",
+      "src": "https://attio.com/_next/static/media/71b036adf157cdcf-s.03nf~dfjdkf~..woff2?dpl=dpl_AsUok5eHy36yBT8disTG2Ch1LHzt",
+      "format": "truetype",
+      "weight": "100"
+    },
+    {
+      "family": "JetBrains Mono",
+      "src": "https://attio.com/_next/static/media/89b21bb081cb7469-s.0gfhww.tctz1o.woff2?dpl=dpl_AsUok5eHy36yBT8disTG2Ch1LHzt",
+      "format": "truetype",
+      "weight": "100"
+    },
+    {
+      "family": "JetBrains Mono",
+      "src": "https://attio.com/_next/static/media/3fe682a82f50d426-s.p.09q3q1i5159bl.woff2?dpl=dpl_AsUok5eHy36yBT8disTG2Ch1LHzt",
+      "format": "truetype",
+      "weight": "100"
+    },
+    {
+      "family": "JetBrains Mono",
+      "src": "https://attio.com/_next/static/media/70bc3e132a0a741e-s.1409xf.ylxg8g.woff2?dpl=dpl_AsUok5eHy36yBT8disTG2Ch1LHzt",
+      "format": "truetype",
+      "weight": "100"
+    },
+    {
+      "family": "inter",
+      "src": "https://attio.com/_next/static/media/inter_regular-s.p.14d~dgkwwinsr.woff2?dpl=dpl_AsUok5eHy36yBT8disTG2Ch1LHzt",
+      "format": "truetype",
+      "weight": "400"
+    },
+    {
+      "family": "inter",
+      "src": "https://attio.com/_next/static/media/inter_medium-s.p.0mb6cdaxva~_b.woff2?dpl=dpl_AsUok5eHy36yBT8disTG2Ch1LHzt",
+      "format": "truetype",
+      "weight": "500"
+    },
+    {
+      "family": "inter",
+      "src": "https://attio.com/_next/static/media/inter_semibold-s.p.0i89rz5dgvr85.woff2?dpl=dpl_AsUok5eHy36yBT8disTG2Ch1LHzt",
+      "format": "truetype",
+      "weight": "600"
+    },
+    {
+      "family": "inter",
+      "src": "https://attio.com/_next/static/media/inter_bold-s.p.17izycnw7mk7o.woff2?dpl=dpl_AsUok5eHy36yBT8disTG2Ch1LHzt",
+      "format": "truetype",
+      "weight": "700"
+    },
+    {
+      "family": "interDisplay",
+      "src": "https://attio.com/_next/static/media/inter_display_medium-s.p.18b1yud.1tn.g.woff2?dpl=dpl_AsUok5eHy36yBT8disTG2Ch1LHzt",
+      "format": "truetype",
+      "weight": "500"
+    },
+    {
+      "family": "interDisplay",
+      "src": "https://attio.com/_next/static/media/inter_display_semibold-s.p.07numhg7zlt5z.woff2?dpl=dpl_AsUok5eHy36yBT8disTG2Ch1LHzt",
+      "format": "truetype",
+      "weight": "600"
+    },
+    {
+      "family": "interDisplay",
+      "src": "https://attio.com/_next/static/media/inter_display_bold-s.p.08z.2j4gcre0y.woff2?dpl=dpl_AsUok5eHy36yBT8disTG2Ch1LHzt",
+      "format": "truetype",
+      "weight": "700"
+    },
+    {
+      "family": "tiemposText",
+      "src": "https://attio.com/_next/static/media/tiempos_text_regular-s.p.09inv_nvjux_7.woff2?dpl=dpl_AsUok5eHy36yBT8disTG2Ch1LHzt",
+      "format": "truetype",
+      "weight": "400"
+    },
+    {
+      "family": "tiemposText",
+      "src": "https://attio.com/_next/static/media/tiempos_text_regular_italic-s.p.01tz5540cqey6.woff2?dpl=dpl_AsUok5eHy36yBT8disTG2Ch1LHzt",
+      "format": "truetype",
+      "weight": "400"
+    }
+  ],
+  "rules": {
+    "maxSizesPerScreen": 4,
+    "headingWeightRange": "600-700",
+    "bodyWeight": 400,
+    "lineHeightBody": 1.5,
+    "lineHeightHeading": 1.2
+  }
+}

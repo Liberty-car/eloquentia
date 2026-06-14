@@ -1,0 +1,102 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "core": {
+    "background": {
+      "value": "#000000",
+      "role": "background",
+      "name": "secondary-border"
+    },
+    "text-muted": {
+      "value": "#605a90",
+      "role": "text-muted"
+    },
+    "text-primary": {
+      "value": "#ffffff",
+      "role": "text-primary",
+      "name": "tile-color"
+    },
+    "surface": {
+      "value": "#1a1a1a",
+      "role": "surface"
+    },
+    "border": {
+      "value": "#333333",
+      "role": "border"
+    },
+    "accent": {
+      "value": "#ffb800",
+      "role": "accent"
+    }
+  },
+  "status": {
+    "warning": {
+      "value": "#f4ede4",
+      "role": "warning"
+    },
+    "success": {
+      "value": "#00d26a",
+      "role": "success"
+    },
+    "danger": {
+      "value": "#ff4757",
+      "role": "danger"
+    }
+  },
+  "extended": {
+    "primary-label": {
+      "value": "#f5f1ff",
+      "role": "info",
+      "name": "primary-label"
+    },
+    "primary": {
+      "value": "#3d0ebf",
+      "role": "unknown",
+      "name": "primary"
+    },
+    "borders": {
+      "value": "#d2d2eb",
+      "role": "unknown",
+      "name": "borders"
+    },
+    "color-1a1a2e": {
+      "value": "#1a1a2e",
+      "role": "unknown"
+    },
+    "color-2563eb": {
+      "value": "#2563eb",
+      "role": "unknown"
+    },
+    "color-666666": {
+      "value": "#666666",
+      "role": "unknown"
+    },
+    "color-16213e": {
+      "value": "#16213e",
+      "role": "unknown"
+    },
+    "borders-dark": {
+      "value": "#bcbcd7",
+      "role": "unknown",
+      "name": "borders-dark"
+    },
+    "primary-label-border": {
+      "value": "#e9e0fa",
+      "role": "unknown",
+      "name": "primary-label-border"
+    },
+    "secondary": {
+      "value": "#100432",
+      "role": "unknown",
+      "name": "secondary"
+    },
+    "grey-label-border": {
+      "value": "#dce3f2",
+      "role": "unknown",
+      "name": "grey-label-border"
+    }
+  },
+  "meta": {
+    "theme": "dark",
+    "extracted": "2026-06-14"
+  }
+}

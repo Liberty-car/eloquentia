@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Button } from '../../components/ui/Button';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { Pagination } from '../../components/ui/Pagination';
+import { usePagination } from '../../lib/usePagination';
 import { DemoDataToggle } from '../../components/DemoDataToggle';
 import { contactsStore } from './store';
 import { ContactCard } from './ContactCard';
@@ -51,6 +53,14 @@ export default function CrmPage() {
   const resultatsFiltres = useMemo(
     () => filterContacts(contacts, filtres),
     [contacts, filtres],
+  );
+
+  // Pagination partagée par les vues « cartes » et « liste » (les vues kanban,
+  // badges et tableau de bord gardent une présentation structurée non paginée).
+  const pagination = usePagination(
+    resultatsFiltres,
+    10,
+    JSON.stringify(filtres),
   );
 
   function ouvrirCreation() {
@@ -179,7 +189,13 @@ export default function CrmPage() {
     }
     if (vue === 'liste') {
       return (
-        <ContactListView contacts={resultatsFiltres} onSelect={ouvrirEdition} />
+        <div className="flex flex-col gap-3">
+          <ContactListView
+            contacts={pagination.elementsPage}
+            onSelect={ouvrirEdition}
+          />
+          {rendrePagination()}
+        </div>
       );
     }
     if (vue === 'kanban') {
@@ -200,15 +216,33 @@ export default function CrmPage() {
       );
     }
     return (
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {resultatsFiltres.map((contact) => (
-          <ContactCard
-            key={contact.id}
-            contact={contact}
-            onClick={() => ouvrirEdition(contact)}
-          />
-        ))}
+      <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {pagination.elementsPage.map((contact) => (
+            <ContactCard
+              key={contact.id}
+              contact={contact}
+              onClick={() => ouvrirEdition(contact)}
+            />
+          ))}
+        </div>
+        {rendrePagination()}
       </div>
+    );
+  }
+
+  function rendrePagination() {
+    return (
+      <Pagination
+        page={pagination.page}
+        nbPages={pagination.nbPages}
+        total={pagination.total}
+        taille={pagination.taille}
+        debut={pagination.debut}
+        nbAffiches={pagination.elementsPage.length}
+        onPageChange={pagination.setPage}
+        onTailleChange={pagination.changerTaille}
+      />
     );
   }
 

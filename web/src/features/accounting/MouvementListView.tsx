@@ -1,7 +1,9 @@
 import { CalendarDays } from 'lucide-react';
 import { Badge } from '../../components/ui/Badge';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { Pagination } from '../../components/ui/Pagination';
 import { cn } from '../../lib/cn';
+import { usePagination } from '../../lib/usePagination';
 import { formatEuros } from './format';
 import { totaux } from './aggregate';
 import { libelleCategorie } from './categories';
@@ -17,19 +19,23 @@ export function MouvementListView({
   evenements = [],
   titreVide = 'Aucun mouvement',
   descriptionVide = 'Active les données de démo ou ajoute un mouvement.',
+  resetKey,
   onSelect,
 }: {
   mouvements: Mouvement[];
   evenements?: { id: string; titre: string }[];
   titreVide?: string;
   descriptionVide?: string;
+  resetKey?: unknown;
   onSelect: (mouvement: Mouvement) => void;
 }) {
+  const pagination = usePagination(mouvements, 10, resetKey);
   const titreParEvenement = new Map(evenements.map((e) => [e.id, e.titre]));
   if (mouvements.length === 0) {
     return <EmptyState title={titreVide} description={descriptionVide} />;
   }
 
+  // Les totaux portent sur l'ensemble filtré, pas seulement la page affichée.
   const t = totaux(mouvements);
 
   return (
@@ -45,7 +51,7 @@ export function MouvementListView({
             </tr>
           </thead>
           <tbody>
-            {mouvements.map((m) => (
+            {pagination.elementsPage.map((m) => (
               <tr
                 key={m.id}
                 onClick={() => onSelect(m)}
@@ -87,6 +93,17 @@ export function MouvementListView({
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        page={pagination.page}
+        nbPages={pagination.nbPages}
+        total={pagination.total}
+        taille={pagination.taille}
+        debut={pagination.debut}
+        nbAffiches={pagination.elementsPage.length}
+        onPageChange={pagination.setPage}
+        onTailleChange={pagination.changerTaille}
+      />
 
       <div className="flex flex-wrap items-center justify-end gap-4 text-sm">
         <span className="text-encre-2">
