@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import {
   DndContext,
   PointerSensor,
@@ -37,13 +38,29 @@ function KanbanCard({
   const style = transform
     ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
     : undefined;
+  // Distinction clic / glisser : on memorise la position au pointerdown (en
+  // phase de capture, sans gener dnd-kit) et on ignore le clic si le pointeur
+  // a bouge (c'etait un drag, pas un clic d'ouverture de fiche).
+  const depart = useRef<{ x: number; y: number } | null>(null);
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...listeners}
       {...attributes}
-      onClick={onSelect}
+      onPointerDownCapture={(e) => {
+        depart.current = { x: e.clientX, y: e.clientY };
+      }}
+      onClick={(e) => {
+        const d = depart.current;
+        if (
+          d &&
+          (Math.abs(e.clientX - d.x) > 5 || Math.abs(e.clientY - d.y) > 5)
+        ) {
+          return;
+        }
+        onSelect();
+      }}
       className={cn(
         'cursor-pointer rounded-xl border-2 border-projecteur bg-papier p-3',
         isDragging && 'opacity-50',

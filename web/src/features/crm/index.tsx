@@ -61,6 +61,9 @@ export default function CrmPage() {
   }
 
   async function changerEtape(id: string, etape: Etape) {
+    // Pas d'ecriture si l'etape ne change pas (carte reposee sur sa colonne).
+    const contact = contacts.find((c) => c.id === id);
+    if (!contact || contact.etape === etape) return;
     await contactsStore.update(id, { etape });
     rafraichir();
   }
