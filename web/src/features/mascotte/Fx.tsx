@@ -55,6 +55,25 @@ export function FxOverlay({ kind }: { kind: FxKind }) {
       </svg>
     );
   }
+  if (kind === 'snack') {
+    // Petit cookie (repas).
+    return (
+      <svg viewBox="0 0 120 120" className="h-full w-full" aria-hidden="true">
+        <circle
+          cx={88}
+          cy={74}
+          r={15}
+          fill="#d8a45a"
+          stroke="#b9823a"
+          strokeWidth={2}
+        />
+        <circle cx={83} cy={69} r={2.2} fill="#6b4423" />
+        <circle cx={93} cy={72} r={2} fill="#6b4423" />
+        <circle cx={86} cy={80} r={2.4} fill="#6b4423" />
+        <circle cx={93} cy={80} r={1.8} fill="#6b4423" />
+      </svg>
+    );
+  }
   // levelup : géré dans le widget (confettis + bandeau)
   return null;
 }

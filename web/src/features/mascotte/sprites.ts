@@ -34,7 +34,13 @@ export function expressionBande(bande: HumeurBande): Expression {
   return 'fatigue';
 }
 
-export type FxKind = 'zzz' | 'etincelles' | 'coeur' | 'sueur' | 'levelup';
+export type FxKind =
+  | 'zzz'
+  | 'etincelles'
+  | 'coeur'
+  | 'sueur'
+  | 'levelup'
+  | 'snack';
 
 export function fxPourReaction(type: ReactionType): FxKind {
   switch (type) {
@@ -50,6 +56,8 @@ export function fxPourReaction(type: ReactionType): FxKind {
       return 'sueur';
     case 'levelup':
       return 'levelup';
+    case 'repas':
+      return 'snack';
   }
 }
 

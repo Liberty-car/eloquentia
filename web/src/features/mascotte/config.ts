@@ -1,5 +1,5 @@
 // Toutes les constantes ajustables de la mascotte « Quetia ».
-import type { Axe, HumeurBande, ReactionType, Stade } from './types';
+import type { Axe, EvenementCompteur, HumeurBande, Stade } from './types';
 
 export const NOM = 'Quetia';
 
@@ -45,6 +45,22 @@ export const HUMEUR_POIDS = {
 
 export const EVENEMENT_PROCHE_JOURS = 7;
 
+// --- Faim (Tamagotchi) ---
+
+export const FAIM_MAX = 100;
+// Vitesse de décroissance de la faim (points par heure réelle écoulée).
+export const FAIM_POINTS_PAR_HEURE = 4;
+// On ne peut nourrir que si la faim est descendue sous ce seuil (pas de gavage).
+export const FAIM_SEUIL_REPAS = 85;
+// La faim pèse sur l'humeur en dessous de ce seuil, jusqu'à un malus maximal.
+export const FAIM_SEUIL_MALUS = 50;
+export const FAIM_MALUS_MAX = 15;
+
+// --- Cycle jour / nuit ---
+
+export const NUIT_DEBUT_HEURE = 21; // 21h
+export const NUIT_FIN_HEURE = 7; // 7h
+
 // Décroissance d'inactivité : 2 par jour sans action positive, plafonnée.
 export const INACTIVITE_PAR_JOUR = 2;
 export const INACTIVITE_JOURS_MAX = 7;
@@ -67,7 +83,7 @@ export const JOURNAL_MAX = 30;
 
 // Libellé, axe et delta unitaire d'un type d'événement marquant.
 export const EVENEMENT_META: Record<
-  Exclude<ReactionType, 'levelup'>,
+  EvenementCompteur,
   { label: string; axe: Axe; unite: number; positif: boolean }
 > = {
   tache_faite: { label: 'Tâche terminée', axe: 'xp', unite: 10, positif: true },
@@ -96,7 +112,7 @@ export const EVENEMENT_META: Record<
 
 // Du plus saillant au moins saillant : choisit la réaction quand plusieurs
 // événements surviennent au même recalcul.
-export const PRIORITE_REACTION: Exclude<ReactionType, 'levelup'>[] = [
+export const PRIORITE_REACTION: EvenementCompteur[] = [
   'contact_perdu',
   'contact_conclu',
   'depense',
@@ -109,7 +125,7 @@ export const PRIORITE_REACTION: Exclude<ReactionType, 'levelup'>[] = [
 // Correspondance compteur -> type d'événement.
 export const COMPTEUR_VERS_TYPE: Record<
   keyof import('./types').Compteurs,
-  Exclude<ReactionType, 'levelup'>
+  EvenementCompteur
 > = {
   tachesFaites: 'tache_faite',
   contactsConclus: 'contact_conclu',

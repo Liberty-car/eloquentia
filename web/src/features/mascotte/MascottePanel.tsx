@@ -1,6 +1,8 @@
 import {
   CalendarCheck,
   CheckCircle2,
+  Cookie,
+  Flame,
   Handshake,
   Mail,
   Sparkles,
@@ -11,6 +13,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '../../lib/cn';
+import { Button } from '../../components/ui/Button';
 import type { MascotteContexte } from './useMascotte';
 import type { HumeurBande, JournalEntry, ReactionType } from './types';
 
@@ -23,7 +26,14 @@ const ICONES: Record<ReactionType, LucideIcon> = {
   depense: TrendingDown,
   contact_perdu: UserX,
   levelup: Sparkles,
+  repas: Cookie,
 };
+
+function couleurFaim(faim: number): string {
+  if (faim >= 50) return 'bg-succes';
+  if (faim >= 25) return 'bg-alerte';
+  return 'bg-erreur';
+}
 
 const COULEUR_BANDE: Record<HumeurBande, string> = {
   epuise: 'bg-erreur',
@@ -67,6 +77,10 @@ export function MascottePanel({
     progressionStade,
     journal,
     conseil,
+    faim,
+    peutNourrir,
+    nourrir,
+    streak,
   } = data;
   const entrees = journal.slice(0, 5);
 
@@ -78,6 +92,12 @@ export function MascottePanel({
           <p className="text-xs text-encre-3">
             Humeur {bandeLabel} - {xp} XP
           </p>
+          {streak > 1 && (
+            <p className="mt-0.5 inline-flex items-center gap-1 text-xs font-medium text-velours">
+              <Flame size={12} />
+              {streak} jours d'activité
+            </p>
+          )}
         </div>
         <button
           type="button"
@@ -123,6 +143,34 @@ export function MascottePanel({
           />
         </div>
       </div>
+
+      {/* Jauge de faim */}
+      <div className="mt-3">
+        <div className="flex items-center justify-between text-[11px] font-medium text-encre-3">
+          <span>Faim</span>
+          <span className="tabular-nums">{faim} / 100</span>
+        </div>
+        <div className="mt-1 h-2 overflow-hidden rounded-full bg-scene">
+          <div
+            className={cn(
+              'h-full rounded-full transition-[width] duration-500',
+              couleurFaim(faim),
+            )}
+            style={{ width: `${faim}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Nourrir */}
+      <Button
+        variant="primary"
+        className="mt-3 w-full justify-center"
+        disabled={!peutNourrir}
+        onClick={() => nourrir()}
+      >
+        <Cookie size={16} />
+        {peutNourrir ? 'Nourrir' : 'Rassasiée'}
+      </Button>
 
       {/* Journal */}
       <div className="mt-3">

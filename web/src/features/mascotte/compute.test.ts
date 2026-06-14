@@ -2,11 +2,14 @@ import { describe, it, expect } from 'vitest';
 import {
   bandeHumeur,
   computeCompteurs,
+  computeFaim,
   computeHumeur,
   computeStade,
   computeXp,
   conseil,
   diffEvents,
+  estNuit,
+  penaliteFaim,
   tachesEnRetard,
 } from './compute';
 import type { Compteurs, DonneesMascotte } from './types';
@@ -284,6 +287,43 @@ describe('computeCompteurs', () => {
     expect(c.depenses).toBe(1);
     expect(c.evenementsPasses).toBe(1);
     expect(c.campagnesEnvoyees).toBe(1);
+  });
+});
+
+describe('computeFaim', () => {
+  it('est rassasiée sans dernier repas connu', () => {
+    expect(computeFaim(undefined, '2026-06-14T10:00:00Z')).toBe(100);
+  });
+  it('décroît avec le temps écoulé', () => {
+    // 10 h après -> 100 - 10*4 = 60
+    expect(computeFaim('2026-06-14T00:00:00Z', '2026-06-14T10:00:00Z')).toBe(
+      60,
+    );
+  });
+  it('est bornée à 0', () => {
+    expect(computeFaim('2026-06-10T00:00:00Z', '2026-06-14T00:00:00Z')).toBe(0);
+  });
+});
+
+describe('penaliteFaim', () => {
+  it('nulle quand la créature est rassasiée', () => {
+    expect(penaliteFaim(50)).toBe(0);
+    expect(penaliteFaim(80)).toBe(0);
+  });
+  it('maximale quand elle est affamée', () => {
+    expect(penaliteFaim(0)).toBe(15);
+  });
+  it('proportionnelle entre les deux', () => {
+    expect(penaliteFaim(25)).toBe(8);
+  });
+});
+
+describe('estNuit', () => {
+  it('vrai le soir et tôt le matin, faux en journée', () => {
+    expect(estNuit(22)).toBe(true);
+    expect(estNuit(3)).toBe(true);
+    expect(estNuit(7)).toBe(false);
+    expect(estNuit(14)).toBe(false);
   });
 });
 

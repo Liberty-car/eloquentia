@@ -18,6 +18,12 @@ export interface MascotteContexte {
   conseil: string;
   reaction: Reaction | null;
   clearReaction: () => void;
+  // --- Tamagotchi / personnalité ---
+  faim: number; // 0 à 100
+  peutNourrir: boolean;
+  nourrir: () => boolean; // renvoie true si le repas a eu lieu
+  streak: number;
+  renommer: (nom: string) => void;
 }
 
 export const MascotteContext = createContext<MascotteContexte | null>(null);

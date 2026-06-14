@@ -7,9 +7,15 @@ import {
   COMPTEUR_VERS_TYPE,
   EVENEMENT_META,
   EVENEMENT_PROCHE_JOURS,
+  FAIM_MALUS_MAX,
+  FAIM_MAX,
+  FAIM_POINTS_PAR_HEURE,
+  FAIM_SEUIL_MALUS,
   FENETRE_JOURS,
   INACTIVITE_JOURS_MAX,
   INACTIVITE_PAR_JOUR,
+  NUIT_DEBUT_HEURE,
+  NUIT_FIN_HEURE,
   PRIORITE_REACTION,
   SEUILS_STADE,
   XP_BONUS_REVENU_MAX,
@@ -221,6 +227,39 @@ export function bandeHumeur(humeur: number): HumeurBande {
     if (humeur >= b.min && humeur <= b.max) return b.bande;
   }
   return 'serein';
+}
+
+// --- Faim (Tamagotchi) ---
+
+// Faim courante (0 = affamée, 100 = repue), dérivée du dernier repas et du
+// temps écoulé. Idempotente : aucun cumul, recalculée à chaque rendu.
+export function computeFaim(
+  dernierRepasIso: string | undefined,
+  maintenantIso: string,
+): number {
+  if (!dernierRepasIso) return FAIM_MAX;
+  const heures =
+    (Date.parse(maintenantIso) - Date.parse(dernierRepasIso)) / 3_600_000;
+  if (Number.isNaN(heures)) return FAIM_MAX;
+  return clamp(
+    Math.round(FAIM_MAX - heures * FAIM_POINTS_PAR_HEURE),
+    0,
+    FAIM_MAX,
+  );
+}
+
+// Malus d'humeur quand la créature a faim (0 si rassasiée).
+export function penaliteFaim(faim: number): number {
+  if (faim >= FAIM_SEUIL_MALUS) return 0;
+  return Math.round(
+    ((FAIM_SEUIL_MALUS - faim) / FAIM_SEUIL_MALUS) * FAIM_MALUS_MAX,
+  );
+}
+
+// --- Cycle jour / nuit ---
+
+export function estNuit(heure: number): boolean {
+  return heure >= NUIT_DEBUT_HEURE || heure < NUIT_FIN_HEURE;
 }
 
 // --- Diff d'événements : journal + réaction ---

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { recalculer } from './store';
+import { nourrir, recalculer, renommer } from './store';
 import type { Compteurs, DonneesMascotte, MascotteState } from './types';
 import type { Mouvement } from '../accounting/types';
 import type { Contact } from '../crm/types';
@@ -49,6 +49,7 @@ function etat(
     humeurBande: 'serein',
     lastComputedAt: NOW,
     journal: [],
+    streak: 0,
     ...p,
   };
 }
@@ -119,5 +120,66 @@ describe('recalculer', () => {
     expect(state.xp).toBe(0);
     expect(state.stade).toBe(3); // figé, pas de retour au stade 1
     expect(reaction).toBeNull();
+  });
+
+  it('la faim fait baisser l’humeur', () => {
+    const precedent = etat({
+      lastSeenCounts: ZERO,
+      dernierRepas: '2026-06-13T00:00:00Z', // ~34 h avant -> faim 0
+    });
+    const { state } = recalculer(
+      vide(),
+      TODAY,
+      '2026-06-14T10:00:00Z',
+      precedent,
+    );
+    expect(state.humeur).toBe(45); // 60 base - 15 de malus de faim
+  });
+
+  it('incrémente la série un nouveau jour actif, la réinitialise après un trou', () => {
+    const base = etat({ lastSeenCounts: ZERO });
+    const data = { ...vide(), contacts: [conclu('c1')] };
+
+    const consecutif = recalculer(data, TODAY, NOW, {
+      ...base,
+      streak: 2,
+      dernierJourActif: '2026-06-13',
+    });
+    expect(consecutif.state.streak).toBe(3);
+    expect(consecutif.state.dernierJourActif).toBe(TODAY);
+
+    const apresTrou = recalculer(data, TODAY, NOW, {
+      ...base,
+      streak: 5,
+      dernierJourActif: '2026-06-10',
+    });
+    expect(apresTrou.state.streak).toBe(1);
+  });
+});
+
+describe('nourrir', () => {
+  it('remet la faim au maximum (nouveau dernier repas)', () => {
+    const p = etat({
+      lastSeenCounts: ZERO,
+      dernierRepas: '2026-06-13T10:00:00Z',
+    });
+    const r = nourrir(p, '2026-06-14T10:00:00Z');
+    expect(r?.dernierRepas).toBe('2026-06-14T10:00:00Z');
+  });
+
+  it('refuse si la créature est déjà presque rassasiée', () => {
+    const p = etat({
+      lastSeenCounts: ZERO,
+      dernierRepas: '2026-06-14T09:00:00Z', // 1 h -> faim 96
+    });
+    expect(nourrir(p, '2026-06-14T10:00:00Z')).toBeNull();
+  });
+});
+
+describe('renommer', () => {
+  it('définit puis efface le nom personnalisé', () => {
+    const p = etat({ lastSeenCounts: ZERO });
+    expect(renommer(p, 'Bidou').nom).toBe('Bidou');
+    expect(renommer({ ...p, nom: 'Bidou' }, '   ').nom).toBeUndefined();
   });
 });

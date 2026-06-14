@@ -8,16 +8,18 @@ export type Stade = 1 | 2 | 3 | 4;
 
 export type HumeurBande = 'epuise' | 'fatigue' | 'serein' | 'radieux';
 
-// Nature d'un événement marquant (sert au journal et aux micro-réactions).
-export type ReactionType =
+// Événements dérivés des compteurs (alimentent journal et réactions).
+export type EvenementCompteur =
   | 'tache_faite'
   | 'contact_conclu'
   | 'revenu'
   | 'evenement'
   | 'campagne'
   | 'depense'
-  | 'contact_perdu'
-  | 'levelup';
+  | 'contact_perdu';
+
+// Nature d'une micro-réaction : un événement-compteur, une évolution ou un repas.
+export type ReactionType = EvenementCompteur | 'levelup' | 'repas';
 
 export type Axe = 'xp' | 'humeur';
 
@@ -57,6 +59,11 @@ export interface MascotteState {
   lastComputedAt: string; // ISO
   lastSeenCounts: Compteurs;
   journal: JournalEntry[]; // max JOURNAL_MAX, FIFO
+  // --- Tamagotchi / personnalité ---
+  nom?: string; // nom personnalisé (sinon NOM par défaut)
+  dernierRepas?: string; // ISO datetime du dernier repas
+  streak: number; // jours d'activité consécutifs
+  dernierJourActif?: string; // ISO AAAA-MM-JJ
 }
 
 // Données brutes lues dans les stores existants (lecture seule).

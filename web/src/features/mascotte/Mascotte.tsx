@@ -73,8 +73,9 @@ export function Mascotte() {
 
   if (!m) return null;
 
-  // Au clic, la créature est contente quelle que soit son humeur réelle.
-  const expression = content ? 'radieux' : expressionBande(m.humeurBande);
+  // Contente au clic et pendant toute réaction positive (repas, contact conclu...).
+  const joyeuse = content || (fx?.positif ?? false);
+  const expression = joyeuse ? 'radieux' : expressionBande(m.humeurBande);
   const rythme = reduced ? '' : rythmeIdle(m.humeurBande);
 
   return (

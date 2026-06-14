@@ -11,13 +11,20 @@ import { contactsStore } from '../crm/store';
 import { evenementsStore, tachesStore } from '../calendar/store';
 import { mouvementsStore } from '../accounting/store';
 import { campagnesStore } from '../mail/store';
-import { conseil, infoStade, tachesEnRetard } from './compute';
-import { BANDES, NOM } from './config';
-import { ecrireMascotte, lireMascotte, recalculer } from './store';
+import { computeFaim, conseil, infoStade, tachesEnRetard } from './compute';
+import { BANDES, FAIM_SEUIL_REPAS, NOM } from './config';
+import {
+  ecrireMascotte,
+  lireMascotte,
+  nourrir as nourrirState,
+  recalculer,
+  renommer as renommerState,
+} from './store';
 import { MascotteContext, type MascotteContexte } from './useMascotte';
 import type { DonneesMascotte, MascotteState, Reaction } from './types';
 
 const DEBOUNCE_MS = 150;
+const RAFRAICHIR_MS = 60_000; // tic lent pour faire vivre faim et cycle jour/nuit
 
 function aujourdHui(): string {
   return new Date().toISOString().slice(0, 10);
@@ -80,24 +87,55 @@ export function MascotteProvider({ children }: { children: ReactNode }) {
     };
     window.addEventListener(STORE_CHANGE_EVENT, planifier);
     window.addEventListener('storage', planifier);
+    const tic = setInterval(() => void recompute(), RAFRAICHIR_MS);
     return () => {
       window.removeEventListener(STORE_CHANGE_EVENT, planifier);
       window.removeEventListener('storage', planifier);
       if (timer.current) clearTimeout(timer.current);
+      clearInterval(tic);
     };
   }, [recompute]);
 
   const clearReaction = useCallback(() => setReaction(null), []);
 
+  const nourrir = useCallback((): boolean => {
+    const maintenant = maintenantIso();
+    const precedent = lireMascotte();
+    if (!precedent) return false;
+    const rassasiee = nourrirState(precedent, maintenant);
+    if (!rassasiee) return false;
+    ecrireMascotte(rassasiee);
+    setReaction({
+      id: `repas-${maintenant}`,
+      type: 'repas',
+      texte: 'Miam !',
+      positif: true,
+    });
+    void recompute();
+    return true;
+  }, [recompute]);
+
+  const renommer = useCallback((nom: string) => {
+    const precedent = lireMascotte();
+    if (!precedent) return;
+    const renomme = renommerState(precedent, nom);
+    ecrireMascotte(renomme);
+    setState(renomme);
+  }, []);
+
   const value = useMemo<MascotteContexte | null>(() => {
     if (!state) return null;
     const info = infoStade(state.stade, state.xp);
     const bande = BANDES.find((b) => b.bande === state.humeurBande);
+    const faim = computeFaim(state.dernierRepas, maintenantIso());
+    const nom = state.nom ?? NOM;
+    // « Quetia adulte » -> « <nom> adulte » si la mascotte a été renommée.
+    const stadeNom = info.nom.replace(NOM, nom);
     return {
-      nom: NOM,
+      nom,
       xp: state.xp,
       stade: state.stade,
-      stadeNom: info.nom,
+      stadeNom,
       progressionStade: info.progressionStade,
       xpDansStade: info.xpDansStade,
       xpStadeSuivant: info.xpStadeSuivant,
@@ -108,8 +146,13 @@ export function MascotteProvider({ children }: { children: ReactNode }) {
       conseil: conseilTexte,
       reaction,
       clearReaction,
+      faim,
+      peutNourrir: faim < FAIM_SEUIL_REPAS,
+      nourrir,
+      streak: state.streak,
+      renommer,
     };
-  }, [state, reaction, conseilTexte, clearReaction]);
+  }, [state, reaction, conseilTexte, clearReaction, nourrir, renommer]);
 
   return (
     <MascotteContext.Provider value={value}>

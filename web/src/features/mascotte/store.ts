@@ -3,13 +3,16 @@
 import {
   bandeHumeur,
   computeCompteurs,
+  computeFaim,
   computeHumeur,
   computeStade,
   computeXp,
   diffEvents,
+  diffJours,
   infoStade,
+  penaliteFaim,
 } from './compute';
-import { JOURNAL_MAX } from './config';
+import { FAIM_SEUIL_REPAS, JOURNAL_MAX } from './config';
 import type {
   DonneesMascotte,
   JournalEntry,
@@ -55,11 +58,20 @@ export function recalculer(
       ? precedent.stade
       : naturel.stade;
   const stadeInfo = infoStade(stade, xp);
-  const humeur = computeHumeur(data, today);
   const compteurs = computeCompteurs(data, today);
+
+  // Faim : premier calcul (ou migration d'un ancien état) -> on considère la
+  // créature rassasiée au moment présent.
+  const dernierRepas = precedent?.dernierRepas ?? maintenant;
+  const faim = computeFaim(dernierRepas, maintenant);
+  // L'humeur intègre le malus de faim, puis est bornée.
+  const humeurBrute = computeHumeur(data, today) - penaliteFaim(faim);
+  const humeur = Math.max(0, Math.min(100, humeurBrute));
 
   let journal: JournalEntry[] = precedent?.journal ?? [];
   let reaction: Reaction | null = null;
+  let streak = precedent?.streak ?? 0;
+  let dernierJourActif = precedent?.dernierJourActif;
 
   if (precedent) {
     const diff = diffEvents(precedent.lastSeenCounts, compteurs, maintenant);
@@ -67,6 +79,16 @@ export function recalculer(
       journal = [...diff.entries, ...journal].slice(0, JOURNAL_MAX);
     }
     reaction = diff.reaction;
+
+    // Série d'activité : un jour compte dès qu'une action positive survient.
+    const actionPositive = diff.entries.some((e) => e.delta > 0);
+    if (actionPositive && dernierJourActif !== today) {
+      streak =
+        dernierJourActif && diffJours(today, dernierJourActif) === 1
+          ? streak + 1
+          : 1;
+      dernierJourActif = today;
+    }
 
     // Le passage de stade prime sur toute autre réaction.
     if (stade > precedent.stade) {
@@ -96,6 +118,32 @@ export function recalculer(
     lastComputedAt: maintenant,
     lastSeenCounts: compteurs,
     journal,
+    streak,
+    dernierRepas,
+    ...(precedent?.nom !== undefined ? { nom: precedent.nom } : {}),
+    ...(dernierJourActif !== undefined ? { dernierJourActif } : {}),
   };
   return { state, reaction };
+}
+
+// Action « nourrir » : repas pris maintenant (la faim repart au maximum).
+// Renvoie null si la créature est déjà presque rassasiée.
+export function nourrir(
+  precedent: MascotteState,
+  maintenant: string,
+): MascotteState | null {
+  const faim = computeFaim(precedent.dernierRepas, maintenant);
+  if (faim >= FAIM_SEUIL_REPAS) return null;
+  return { ...precedent, dernierRepas: maintenant };
+}
+
+// Action « renommer » : nom personnalisé (vide -> retour au nom par défaut).
+export function renommer(precedent: MascotteState, nom: string): MascotteState {
+  const propre = nom.trim();
+  if (propre === '') {
+    const { nom: _retire, ...reste } = precedent;
+    void _retire;
+    return reste;
+  }
+  return { ...precedent, nom: propre };
 }
