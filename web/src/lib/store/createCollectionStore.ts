@@ -32,6 +32,18 @@ function writeRaw<T>(key: string, items: T[]): void {
   localStorage.setItem(key, JSON.stringify(items));
 }
 
+// Événement émis à chaque mutation, pour que des observateurs (ex. la mascotte)
+// se rafraîchissent sans polling. Amélioration rétrocompatible : l'API publique
+// du store ne change pas.
+export const STORE_CHANGE_EVENT = 'eloquetia:store-change';
+
+function notifierChangement(namespace: string): void {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(
+    new CustomEvent(STORE_CHANGE_EVENT, { detail: { namespace } }),
+  );
+}
+
 let idCounter = 0;
 function generateId(): string {
   idCounter += 1;
@@ -56,6 +68,7 @@ export function createCollectionStore<T extends Identifiable>(
       const items = readRaw<T>(key);
       const created = { ...data, id: generateId() } as unknown as T;
       writeRaw(key, [...items, created]);
+      notifierChangement(namespace);
       return created;
     },
     async update(id, patch) {
@@ -67,6 +80,7 @@ export function createCollectionStore<T extends Identifiable>(
       const updated = { ...items[index], ...patch } as unknown as T;
       items[index] = updated;
       writeRaw(key, items);
+      notifierChangement(namespace);
       return updated;
     },
     async replace(id, data) {
@@ -78,19 +92,23 @@ export function createCollectionStore<T extends Identifiable>(
       const remplace = { ...data, id } as unknown as T;
       items[index] = remplace;
       writeRaw(key, items);
+      notifierChangement(namespace);
       return remplace;
     },
     async remove(id) {
       const items = readRaw<T>(key).filter((item) => item.id !== id);
       writeRaw(key, items);
+      notifierChangement(namespace);
     },
     async seed() {
       writeRaw(key, seeder());
       localStorage.setItem(seededKey, 'true');
+      notifierChangement(namespace);
     },
     async clear() {
       localStorage.removeItem(key);
       localStorage.removeItem(seededKey);
+      notifierChangement(namespace);
     },
     async isSeeded() {
       return localStorage.getItem(seededKey) === 'true';
