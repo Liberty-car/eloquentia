@@ -1,25 +1,31 @@
 import { createBrowserRouter } from 'react-router';
 import { RootLayout } from './RootLayout';
-import DashboardPage from './features/dashboard';
-import PartnersPage from './features/partners';
-import JuryPage from './features/jury';
-import EventsPage from './features/events';
-import TasksPage from './features/tasks';
-import EmailingPage from './features/emailing';
+import { RequireAuth } from './components/RequireAuth';
+import LoginPage from './features/auth/LoginPage';
+import HomePage from './features/home';
+import CrmPage from './features/crm';
+import CalendarPage from './features/calendar';
+import MailPage from './features/mail';
+import AccountingPage from './features/accounting';
 
-// Routeur en mode librairie (React Router v7). Une route placeholder par
-// feature. Les pages sont volontairement vides (fondations sans UI).
+// Routeur en mode librairie (React Router v7).
+// /login est public ; les 5 onglets sont proteges par RequireAuth.
 export const router = createBrowserRouter([
+  { path: '/login', element: <LoginPage /> },
   {
-    path: '/',
-    element: <RootLayout />,
+    element: <RequireAuth />,
     children: [
-      { index: true, element: <DashboardPage /> },
-      { path: 'partners', element: <PartnersPage /> },
-      { path: 'jury', element: <JuryPage /> },
-      { path: 'events', element: <EventsPage /> },
-      { path: 'tasks', element: <TasksPage /> },
-      { path: 'emailing', element: <EmailingPage /> },
+      {
+        path: '/',
+        element: <RootLayout />,
+        children: [
+          { index: true, element: <HomePage /> },
+          { path: 'crm', element: <CrmPage /> },
+          { path: 'calendrier', element: <CalendarPage /> },
+          { path: 'mail', element: <MailPage /> },
+          { path: 'comptabilite', element: <AccountingPage /> },
+        ],
+      },
     ],
   },
 ]);
