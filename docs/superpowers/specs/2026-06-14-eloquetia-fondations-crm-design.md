@@ -1,7 +1,7 @@
 # Eloquetia : spec fondations + design system + CRM (premier cycle)
 
 - Date : 2026-06-14
-- Statut : coquille + CRM complet + module Calendrier complet (mois, agenda, par membre, par statut) implémentés
+- Statut : coquille + CRM complet + Calendrier complet + Comptabilité complète (liste/fiche, tableau de bord réel, prévisionnel cumulé jusqu'à juil. 2028, export CSV compatible Excel) implémentés. Suivi compta non bloquant : extraire KpiCard partagé, tests d'invariant montant positif, sous-totaux réel/prévisionnel dans la liste. Mail et Accueil restants.
 - Auteur : Anthony + Claude
 
 ## 1. Contexte et objectif
