@@ -1,0 +1,243 @@
+// Schéma Prisma de base pour Eloquentia.
+// Structure relationnelle sobre couvrant les domaines visés (CRM, jury,
+// événements, tâches, emailing). Aucune logique métier ici : seulement le
+// modèle de données, extensible feature par feature.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  runtime  = "nodejs"
+}
+
+datasource db {
+  provider = "postgresql"
+  // En Prisma 7, les URLs de connexion sont definies dans prisma.config.ts :
+  // - runtime : via le driver adapter (@prisma/adapter-pg) avec DATABASE_URL.
+  // - migrations : champ datasource.url de prisma.config.ts (DIRECT_URL).
+}
+
+// ---------------------------------------------------------------------------
+// Énumérations
+// ---------------------------------------------------------------------------
+
+enum Role {
+  ADMIN
+  MEMBRE
+}
+
+enum PartnerStatus {
+  PROSPECT
+  ACTIF
+  INACTIF
+}
+
+enum InteractionType {
+  EMAIL
+  APPEL
+  REUNION
+  AUTRE
+}
+
+enum TaskStatus {
+  A_FAIRE
+  EN_COURS
+  TERMINEE
+}
+
+enum TaskPriority {
+  BASSE
+  NORMALE
+  HAUTE
+}
+
+enum EventStatus {
+  PLANIFIE
+  CONFIRME
+  TERMINE
+  ANNULE
+}
+
+enum CampaignStatus {
+  BROUILLON
+  PROGRAMMEE
+  ENVOYEE
+}
+
+// ---------------------------------------------------------------------------
+// Utilisateurs (équipe interne)
+// ---------------------------------------------------------------------------
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      Role     @default(MEMBRE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignedTasks Task[]        @relation("TaskAssignee")
+  interactions  Interaction[]
+  createdEvents Event[]
+
+  @@map("users")
+}
+
+// ---------------------------------------------------------------------------
+// CRM partenariats
+// ---------------------------------------------------------------------------
+
+model Partner {
+  id        String        @id @default(cuid())
+  name      String
+  status    PartnerStatus @default(PROSPECT)
+  website   String?
+  notes     String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  contacts     Contact[]
+  interactions Interaction[]
+
+  @@map("partners")
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String?
+  phone     String?
+  jobTitle  String? // fonction du contact chez le partenaire
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  partnerId String
+  partner   Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  interactions Interaction[]
+
+  @@index([partnerId])
+  @@map("contacts")
+}
+
+model Interaction {
+  id        String          @id @default(cuid())
+  type      InteractionType
+  summary   String
+  date      DateTime        @default(now())
+  createdAt DateTime        @default(now())
+
+  partnerId String
+  partner   Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  contactId String?
+  contact   Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+
+  authorId String?
+  author   User?   @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([partnerId])
+  @@index([contactId])
+  @@map("interactions")
+}
+
+// ---------------------------------------------------------------------------
+// Annuaire jury
+// ---------------------------------------------------------------------------
+
+model Juror {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String?
+  phone     String?
+  expertise String? // domaine ou spécialité
+  bio       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  events EventJuror[]
+
+  @@map("jurors")
+}
+
+// ---------------------------------------------------------------------------
+// Calendrier des événements
+// ---------------------------------------------------------------------------
+
+model Event {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  status      EventStatus @default(PLANIFIE)
+  startsAt    DateTime
+  endsAt      DateTime?
+  location    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  createdById String?
+  createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  jurors EventJuror[]
+  tasks  Task[]
+
+  @@index([createdById])
+  @@map("events")
+}
+
+// Table de jointure jury <-> événement (avec rôle du juré sur l'événement).
+model EventJuror {
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  jurorId String
+  juror   Juror  @relation(fields: [jurorId], references: [id], onDelete: Cascade)
+  role    String?
+
+  @@id([eventId, jurorId])
+  @@index([jurorId])
+  @@map("event_jurors")
+}
+
+// ---------------------------------------------------------------------------
+// Gestion des tâches
+// ---------------------------------------------------------------------------
+
+model Task {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus   @default(A_FAIRE)
+  priority    TaskPriority @default(NORMALE)
+  dueDate     DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  assigneeId String?
+  assignee   User?   @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  eventId String?
+  event   Event?  @relation(fields: [eventId], references: [id], onDelete: SetNull)
+
+  @@index([assigneeId])
+  @@index([eventId])
+  @@map("tasks")
+}
+
+// ---------------------------------------------------------------------------
+// Email marketing (Brevo)
+// ---------------------------------------------------------------------------
+
+model EmailCampaign {
+  id          String         @id @default(cuid())
+  name        String
+  subject     String
+  status      CampaignStatus @default(BROUILLON)
+  brevoId     String? // identifiant côté Brevo une fois synchronisé
+  scheduledAt DateTime?
+  sentAt      DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@map("email_campaigns")
+}
