@@ -10,6 +10,7 @@ export interface CollectionStore<T extends Identifiable> {
   get(id: string): Promise<T | null>;
   create(data: Omit<T, 'id'>): Promise<T>;
   update(id: string, patch: Partial<Omit<T, 'id'>>): Promise<T>;
+  replace(id: string, data: Omit<T, 'id'>): Promise<T>;
   remove(id: string): Promise<void>;
   seed(): Promise<void>;
   clear(): Promise<void>;
@@ -67,6 +68,17 @@ export function createCollectionStore<T extends Identifiable>(
       items[index] = updated;
       writeRaw(key, items);
       return updated;
+    },
+    async replace(id, data) {
+      const items = readRaw<T>(key);
+      const index = items.findIndex((item) => item.id === id);
+      if (index === -1) {
+        throw new Error(`Élément introuvable : ${id}`);
+      }
+      const remplace = { ...data, id } as unknown as T;
+      items[index] = remplace;
+      writeRaw(key, items);
+      return remplace;
     },
     async remove(id) {
       const items = readRaw<T>(key).filter((item) => item.id !== id);

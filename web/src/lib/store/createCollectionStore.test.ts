@@ -59,4 +59,23 @@ describe('createCollectionStore', () => {
     expect(await store.list()).toEqual([]);
     expect(await store.isSeeded()).toBe(false);
   });
+
+  it('replace remplace entièrement et peut vider un champ', async () => {
+    interface Truc {
+      id: string;
+      a: string;
+      b?: string;
+    }
+    const store = createCollectionStore<Truc>('test:replace', () => []);
+    const cree = await store.create({ a: 'x', b: 'y' });
+    const remplace = await store.replace(cree.id, { a: 'x2' });
+    expect(remplace.a).toBe('x2');
+    expect(remplace.b).toBeUndefined();
+    expect((await store.get(cree.id))?.b).toBeUndefined();
+  });
+
+  it('replace jette si introuvable', async () => {
+    const store = createCollectionStore<Widget>('test:replace2', seeder);
+    await expect(store.replace('inconnu', { name: 'X' })).rejects.toThrow();
+  });
 });
