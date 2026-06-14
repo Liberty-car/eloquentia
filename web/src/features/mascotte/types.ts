@@ -18,8 +18,8 @@ export type EvenementCompteur =
   | 'depense'
   | 'contact_perdu';
 
-// Nature d'une micro-réaction : un événement-compteur, une évolution ou un repas.
-export type ReactionType = EvenementCompteur | 'levelup' | 'repas';
+// Nature d'une micro-réaction : événement-compteur, évolution, repas ou câlin.
+export type ReactionType = EvenementCompteur | 'levelup' | 'repas' | 'caresse';
 
 export type Axe = 'xp' | 'humeur';
 

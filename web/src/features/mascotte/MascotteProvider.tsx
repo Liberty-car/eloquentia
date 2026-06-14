@@ -122,6 +122,15 @@ export function MascotteProvider({ children }: { children: ReactNode }) {
     return true;
   }, [recompute]);
 
+  const caresser = useCallback(() => {
+    setReaction({
+      id: `caresse-${maintenantIso()}`,
+      type: 'caresse',
+      texte: '',
+      positif: true,
+    });
+  }, []);
+
   const renommer = useCallback((nom: string) => {
     const precedent = lireMascotte();
     if (!precedent) return;
@@ -165,12 +174,21 @@ export function MascotteProvider({ children }: { children: ReactNode }) {
       faim,
       peutNourrir: faim < FAIM_SEUIL_REPAS,
       nourrir,
+      caresser,
       streak: state.streak,
       renommer,
       nuit,
       bulle,
     };
-  }, [state, reaction, conseilTexte, clearReaction, nourrir, renommer]);
+  }, [
+    state,
+    reaction,
+    conseilTexte,
+    clearReaction,
+    nourrir,
+    caresser,
+    renommer,
+  ]);
 
   return (
     <MascotteContext.Provider value={value}>

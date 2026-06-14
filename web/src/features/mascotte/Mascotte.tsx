@@ -33,7 +33,6 @@ export function Mascotte() {
   const m = useMascotte();
   const reduced = useReducedMotion() ?? false;
   const [panelOuvert, setPanelOuvert] = useState(false);
-  const [survol, setSurvol] = useState(false);
   const [fx, setFx] = useState<FxActif | null>(null);
   // Petit moment de joie quand on clique sur la créature (sourire + coeur).
   const [content, setContent] = useState(false);
@@ -124,29 +123,11 @@ export function Mascotte() {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Bulle de dialogue (au survol, panneau fermé) */}
-        <AnimatePresence>
-          {survol && !panelOuvert && !fx?.levelup && (
-            <motion.div
-              key="bulle"
-              className="w-fit max-w-48 rounded-2xl border border-trait bg-papier px-3 py-1.5 text-xs font-medium text-encre-2 shadow"
-              initial={reduced ? { opacity: 0 } : { opacity: 0, y: 6 }}
-              animate={reduced ? { opacity: 1 } : { opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
-            >
-              {m.bulle}
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       <button
         type="button"
         onClick={gererClic}
-        onMouseEnter={() => setSurvol(true)}
-        onMouseLeave={() => setSurvol(false)}
         aria-label={`${m.stadeNom}, humeur ${m.bandeLabel}. Ouvrir le détail de ${m.nom}.`}
         aria-expanded={panelOuvert}
         className="pointer-events-auto relative grid h-20 w-20 place-items-center rounded-full border-2 border-projecteur bg-papier shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
@@ -219,18 +200,20 @@ export function Mascotte() {
                     />
                   ))}
 
-                <motion.span
-                  className={cn(
-                    'absolute left-1/2 top-0 -translate-x-1/2 text-xs font-extrabold tabular-nums',
-                    fx.positif ? 'text-velours' : 'text-erreur',
-                  )}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={reduced ? { opacity: 1 } : { opacity: 1, y: -22 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: reduced ? 0.2 : 1.3 }}
-                >
-                  {fx.texte}
-                </motion.span>
+                {fx.texte && (
+                  <motion.span
+                    className={cn(
+                      'absolute left-1/2 top-0 -translate-x-1/2 text-xs font-extrabold tabular-nums',
+                      fx.positif ? 'text-velours' : 'text-erreur',
+                    )}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={reduced ? { opacity: 1 } : { opacity: 1, y: -22 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: reduced ? 0.2 : 1.3 }}
+                  >
+                    {fx.texte}
+                  </motion.span>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

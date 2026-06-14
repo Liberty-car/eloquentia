@@ -3,9 +3,12 @@ import {
   CheckCircle2,
   Cookie,
   Flame,
+  Hand,
   Handshake,
   Mail,
+  Moon,
   Sparkles,
+  Sun,
   TrendingDown,
   TrendingUp,
   UserX,
@@ -27,6 +30,7 @@ const ICONES: Record<ReactionType, LucideIcon> = {
   contact_perdu: UserX,
   levelup: Sparkles,
   repas: Cookie,
+  caresse: Hand,
 };
 
 function couleurFaim(faim: number): string {
@@ -80,36 +84,53 @@ export function MascottePanel({
     faim,
     peutNourrir,
     nourrir,
+    caresser,
     streak,
     nom,
     renommer,
+    bulle,
+    nuit,
   } = data;
   const entrees = journal.slice(0, 5);
 
   return (
-    <div className="w-72 rounded-2xl border-2 border-projecteur bg-papier p-4 shadow-lg">
+    <div className="relative w-72 rounded-2xl border-2 border-projecteur bg-papier p-4 shadow-lg">
+      {/* Queue de la bulle, pointant vers la pastille */}
+      <span className="absolute -bottom-[9px] left-7 h-3.5 w-3.5 rotate-45 border-b-2 border-r-2 border-projecteur bg-papier" />
+
       <div className="flex items-start justify-between gap-2">
         <div>
           <p className="text-sm font-extrabold text-encre">{stadeNom}</p>
           <p className="text-xs text-encre-3">
             Humeur {bandeLabel} - {xp} XP
           </p>
-          {streak > 1 && (
-            <p className="mt-0.5 inline-flex items-center gap-1 text-xs font-medium text-velours">
-              <Flame size={12} />
-              {streak} jours d'activité
-            </p>
-          )}
+          <div className="mt-0.5 flex flex-wrap items-center gap-2">
+            {streak > 1 && (
+              <span className="inline-flex items-center gap-1 text-xs font-medium text-velours">
+                <Flame size={12} />
+                {streak} jours
+              </span>
+            )}
+            <span className="inline-flex items-center gap-1 text-xs text-encre-3">
+              {nuit ? <Moon size={12} /> : <Sun size={12} />}
+              {nuit ? 'Nuit' : 'Jour'}
+            </span>
+          </div>
         </div>
         <button
           type="button"
           onClick={onClose}
-          aria-label="Fermer le panneau de Quetia"
+          aria-label="Fermer la bulle de Quetia"
           className="rounded-full p-1 text-encre-3 transition-colors hover:bg-scene hover:text-encre"
         >
           <X size={16} />
         </button>
       </div>
+
+      {/* Message contextuel */}
+      <p className="mt-2 rounded-[10px] bg-jaune-brume px-3 py-2 text-xs font-medium text-encre">
+        {bulle}
+      </p>
 
       {/* Progression XP */}
       <div className="mt-3">
@@ -163,16 +184,26 @@ export function MascottePanel({
         </div>
       </div>
 
-      {/* Nourrir */}
-      <Button
-        variant="primary"
-        className="mt-3 w-full justify-center"
-        disabled={!peutNourrir}
-        onClick={() => nourrir()}
-      >
-        <Cookie size={16} />
-        {peutNourrir ? 'Nourrir' : 'Rassasiée'}
-      </Button>
+      {/* Actions */}
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <Button
+          variant="outline"
+          className="justify-center"
+          onClick={() => caresser()}
+        >
+          <Hand size={16} />
+          Caresser
+        </Button>
+        <Button
+          variant="primary"
+          className="justify-center"
+          disabled={!peutNourrir}
+          onClick={() => nourrir()}
+        >
+          <Cookie size={16} />
+          {peutNourrir ? 'Nourrir' : 'Rassasiée'}
+        </Button>
+      </div>
 
       {/* Journal */}
       <div className="mt-3">

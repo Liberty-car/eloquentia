@@ -22,6 +22,7 @@ export interface MascotteContexte {
   faim: number; // 0 à 100
   peutNourrir: boolean;
   nourrir: () => boolean; // renvoie true si le repas a eu lieu
+  caresser: () => void; // câlin : la rend joyeuse (coeurs)
   streak: number;
   renommer: (nom: string) => void;
   nuit: boolean; // cycle jour / nuit (heure locale)

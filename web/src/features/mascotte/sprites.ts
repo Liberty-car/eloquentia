@@ -50,6 +50,7 @@ export function fxPourReaction(type: ReactionType): FxKind {
     case 'campagne':
       return 'etincelles';
     case 'tache_faite':
+    case 'caresse':
       return 'coeur';
     case 'depense':
     case 'contact_perdu':
