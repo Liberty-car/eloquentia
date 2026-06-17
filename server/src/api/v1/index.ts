@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import { healthRouter } from '../../modules/health/health.routes';
+import { attachmentsRouter } from '../../modules/attachments/attachments.routes';
 
 // Routeur racine de l'API v1. Il monte les sous-routeurs de chaque module.
 export const apiV1Router = Router();
 
 // Module vivant (référence du pattern de réponse).
 apiV1Router.use('/health', healthRouter);
+apiV1Router.use('/attachments', attachmentsRouter);
 
 // Les modules métier sont créés mais NON montés tant qu'ils sont vides
 // (fondations sans feature). Pour activer un module, définir ses routes
