@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { env } from '../../config/env';
 
 // Liste fermée des types d'entités auxquelles on peut attacher un fichier.
-export const ENTITY_TYPES = ['task', 'event', 'mouvement'] as const;
+export const ENTITY_TYPES = ['task', 'event', 'mouvement', 'contact'] as const;
 export type EntityType = (typeof ENTITY_TYPES)[number];
 
 // Liste blanche des types MIME autorisés.
