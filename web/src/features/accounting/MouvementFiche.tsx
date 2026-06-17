@@ -92,7 +92,9 @@ export function MouvementFiche({
       await onSave(values, fichierEnAttente ?? undefined);
     } catch {
       setErreur(
-        "Échec de l'enregistrement du justificatif. Le mouvement n'a pas été créé.",
+        mouvement
+          ? "Échec de l'ajout du justificatif. Le mouvement est inchangé."
+          : "Échec de l'enregistrement du justificatif. Le mouvement n'a pas été créé.",
       );
     } finally {
       setEnregistrement(false);
@@ -287,6 +289,7 @@ export function MouvementFiche({
               <input
                 id="m-justif"
                 type="file"
+                accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.docx,.xlsx,.pptx,.csv,.txt,.zip"
                 onChange={(e) => {
                   const fichier = e.target.files?.[0] ?? null;
                   setFichierEnAttente(fichier);

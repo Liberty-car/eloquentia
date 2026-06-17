@@ -24,10 +24,19 @@ const entityType = z.enum(ENTITY_TYPES);
 const mimeType = z.enum(ALLOWED_MIME_TYPES);
 const sizeBytes = z.number().int().positive().max(env.ATTACHMENTS_MAX_BYTES);
 const fileName = z.string().min(1).max(255);
+// L'identifiant d'entite est borne aux caracteres des ids reels (cuid ou id
+// localStorage : alphanumeriques, tiret, underscore). Cela empeche toute
+// tentative de traversee de chemin (ex. « abc/../mouvement ») dans le chemin
+// de stockage construit cote serveur.
+const entityId = z
+  .string()
+  .min(1)
+  .max(64)
+  .regex(/^[a-zA-Z0-9_-]+$/, 'entityId invalide');
 
 export const signBodySchema = z.object({
   entityType,
-  entityId: z.string().min(1),
+  entityId,
   fileName,
   mimeType,
   sizeBytes,
@@ -39,7 +48,7 @@ export const createBodySchema = signBodySchema.extend({
 
 export const listQuerySchema = z.object({
   entityType,
-  entityId: z.string().min(1),
+  entityId,
 });
 
 export const idParamsSchema = z.object({

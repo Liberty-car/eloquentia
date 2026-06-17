@@ -86,6 +86,7 @@ export function PiecesJointes({
         <input
           ref={inputRef}
           type="file"
+          accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.docx,.xlsx,.pptx,.csv,.txt,.zip"
           className="hidden"
           onChange={(e) => void onFichier(e.target.files?.[0])}
         />
