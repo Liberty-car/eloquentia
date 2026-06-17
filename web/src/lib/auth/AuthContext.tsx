@@ -26,8 +26,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       user,
       login: (email: string) => {
-        // Phase factice : aucune verification. Jeton fictif EN MEMOIRE seulement.
-        tokenStore.set('factice');
+        // Jeton EN MEMOIRE seulement. En dev, on peut injecter un vrai JWT
+        // (issu de `npm run mint-token`) via VITE_DEV_TOKEN pour que les appels
+        // backend authentifiés (ex. pièces jointes) fonctionnent. Sinon, jeton
+        // factice : l'app locale (localStorage) reste utilisable, mais les
+        // routes backend renverront 401.
+        const devToken = import.meta.env.VITE_DEV_TOKEN as string | undefined;
+        tokenStore.set(devToken && devToken.length > 0 ? devToken : 'factice');
         setUser({ email });
       },
       logout: () => {
