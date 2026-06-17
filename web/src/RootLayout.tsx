@@ -1,5 +1,13 @@
 import { NavLink, Outlet } from 'react-router';
-import { Calendar, Home, LogOut, Mail, Users, Wallet } from 'lucide-react';
+import {
+  Calendar,
+  ExternalLink,
+  Home,
+  LogOut,
+  Mail,
+  Users,
+  Wallet,
+} from 'lucide-react';
 import { useAuth } from './lib/auth/AuthContext';
 import { Mascotte } from './features/mascotte/Mascotte';
 import { cn } from './lib/cn';
@@ -17,10 +25,23 @@ export function RootLayout() {
   return (
     <div className="flex min-h-screen bg-scene">
       <aside className="flex w-62 flex-col border-r border-trait px-3 py-5">
-        <div className="px-3 pb-6 text-xl font-extrabold text-encre">
-          Eloquentia Strasbourg
+        <div className="flex justify-center pb-4">
+          <img
+            src="/logo.png"
+            alt="Eloquentia Strasbourg"
+            className="w-full object-contain"
+          />
         </div>
         <nav className="flex flex-1 flex-col gap-1">
+          <a
+            href="https://app.notion.com/p/3827b37b2a5780878bbbd975d1110a17?pvs=106"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mb-1 flex items-center gap-2.5 rounded-[10px] bg-gel-rose px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-velours"
+          >
+            <ExternalLink size={16} />
+            Notion
+          </a>
           {links.map(({ to, label, icon: Icon, end }) => (
             <NavLink
               key={to}
