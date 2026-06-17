@@ -2,6 +2,13 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { EvenementFiche } from './EvenementFiche';
 
+vi.mock('../attachments/attachmentsApi', () => ({
+  listAttachments: vi.fn().mockResolvedValue([]),
+  uploadAttachment: vi.fn(),
+  openAttachment: vi.fn(),
+  deleteAttachment: vi.fn(),
+}));
+
 describe('EvenementFiche', () => {
   it('création : saisie puis enregistrement renvoie les valeurs', () => {
     const onSave = vi.fn();

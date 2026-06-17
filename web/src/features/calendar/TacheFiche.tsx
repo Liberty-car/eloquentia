@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { SidePanel } from '../../components/ui/SidePanel';
 import { cn } from '../../lib/cn';
+import { PiecesJointes } from '../attachments/PiecesJointes';
 import {
   MEMBRES,
   PRIORITES,
@@ -160,6 +161,12 @@ export function TacheFiche({
             <Check size={16} />
             Marquer comme réalisé
           </Button>
+        )}
+
+        {tache?.id && (
+          <div className="border-t border-projecteur/40 pt-4">
+            <PiecesJointes entityType="task" entityId={tache.id} />
+          </div>
         )}
 
         <div className="mt-2 flex items-center justify-between">

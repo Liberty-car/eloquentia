@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { SidePanel } from '../../components/ui/SidePanel';
+import { PiecesJointes } from '../attachments/PiecesJointes';
 import type { Evenement, EvenementFormValues } from './types';
 
 function valeurs(
@@ -90,6 +91,12 @@ export function EvenementFiche({
             className="rounded-[10px] border border-trait bg-scene px-3 py-2 text-sm text-encre placeholder:text-encre-4 focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus/30"
           />
         </div>
+        {evenement?.id && (
+          <div className="border-t border-projecteur/40 pt-4">
+            <PiecesJointes entityType="event" entityId={evenement.id} />
+          </div>
+        )}
+
         <div className="mt-2 flex items-center justify-between">
           {evenement ? (
             <Button variant="ghost" className="text-erreur" onClick={onDelete}>

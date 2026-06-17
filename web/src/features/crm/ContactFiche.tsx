@@ -3,6 +3,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { SidePanel } from '../../components/ui/SidePanel';
 import { cn } from '../../lib/cn';
+import { PiecesJointes } from '../attachments/PiecesJointes';
 import { tousBadges } from './badges';
 import {
   ETAPES,
@@ -171,6 +172,12 @@ export function ContactFiche({
             className="rounded-[10px] border border-trait bg-scene px-3 py-2 text-sm text-encre placeholder:text-encre-4 focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus/30"
           />
         </div>
+
+        {contact?.id && (
+          <div className="border-t border-projecteur/40 pt-4">
+            <PiecesJointes entityType="contact" entityId={contact.id} />
+          </div>
+        )}
 
         <div className="mt-2 flex items-center justify-between">
           {contact ? (
