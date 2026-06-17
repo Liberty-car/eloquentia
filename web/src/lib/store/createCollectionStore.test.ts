@@ -1,0 +1,81 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+import { createCollectionStore } from './createCollectionStore';
+
+interface Widget {
+  id: string;
+  name: string;
+}
+
+const seeder = (): Widget[] => [
+  { id: 'w1', name: 'Alpha' },
+  { id: 'w2', name: 'Beta' },
+];
+
+describe('createCollectionStore', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it('démarre vide et non seedé', async () => {
+    const store = createCollectionStore<Widget>('test:widgets', seeder);
+    expect(await store.list()).toEqual([]);
+    expect(await store.isSeeded()).toBe(false);
+  });
+
+  it('crée et relit un élément avec un id généré', async () => {
+    const store = createCollectionStore<Widget>('test:widgets', seeder);
+    const created = await store.create({ name: 'Gamma' });
+    expect(created.id).toBeTruthy();
+    expect(await store.list()).toHaveLength(1);
+    expect(await store.get(created.id)).toEqual(created);
+  });
+
+  it('met à jour un élément', async () => {
+    const store = createCollectionStore<Widget>('test:widgets', seeder);
+    const created = await store.create({ name: 'Gamma' });
+    const updated = await store.update(created.id, { name: 'Delta' });
+    expect(updated.name).toBe('Delta');
+    expect((await store.get(created.id))?.name).toBe('Delta');
+  });
+
+  it('supprime un élément', async () => {
+    const store = createCollectionStore<Widget>('test:widgets', seeder);
+    const created = await store.create({ name: 'Gamma' });
+    await store.remove(created.id);
+    expect(await store.list()).toEqual([]);
+  });
+
+  it('seed injecte les données de démo et marque comme seedé', async () => {
+    const store = createCollectionStore<Widget>('test:widgets', seeder);
+    await store.seed();
+    expect(await store.list()).toHaveLength(2);
+    expect(await store.isSeeded()).toBe(true);
+  });
+
+  it('clear vide la collection et le marqueur', async () => {
+    const store = createCollectionStore<Widget>('test:widgets', seeder);
+    await store.seed();
+    await store.clear();
+    expect(await store.list()).toEqual([]);
+    expect(await store.isSeeded()).toBe(false);
+  });
+
+  it('replace remplace entièrement et peut vider un champ', async () => {
+    interface Truc {
+      id: string;
+      a: string;
+      b?: string;
+    }
+    const store = createCollectionStore<Truc>('test:replace', () => []);
+    const cree = await store.create({ a: 'x', b: 'y' });
+    const remplace = await store.replace(cree.id, { a: 'x2' });
+    expect(remplace.a).toBe('x2');
+    expect(remplace.b).toBeUndefined();
+    expect((await store.get(cree.id))?.b).toBeUndefined();
+  });
+
+  it('replace jette si introuvable', async () => {
+    const store = createCollectionStore<Widget>('test:replace2', seeder);
+    await expect(store.replace('inconnu', { name: 'X' })).rejects.toThrow();
+  });
+});

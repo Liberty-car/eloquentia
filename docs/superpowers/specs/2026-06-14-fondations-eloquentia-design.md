@@ -1,4 +1,4 @@
-# Fondations Eloquentia — Cadrage
+# Fondations Eloquentia : cadrage
 
 Date : 2026-06-14. Statut : validé.
 

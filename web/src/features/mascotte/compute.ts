@@ -1,0 +1,368 @@
+// Calculs PURS de la mascotte : XP, stade, humeur, diff d'événements, conseil.
+// Aucune dépendance au DOM ni au temps réel : « today » est toujours passé en
+// argument pour garantir l'idempotence et la testabilité.
+import {
+  BANDES,
+  BASE_HUMEUR,
+  COMPTEUR_VERS_TYPE,
+  EVENEMENT_META,
+  EVENEMENT_PROCHE_JOURS,
+  FAIM_MALUS_MAX,
+  FAIM_MAX,
+  FAIM_POINTS_PAR_HEURE,
+  FAIM_SEUIL_MALUS,
+  FENETRE_JOURS,
+  INACTIVITE_JOURS_MAX,
+  INACTIVITE_PAR_JOUR,
+  NUIT_DEBUT_HEURE,
+  NUIT_FIN_HEURE,
+  PRIORITE_REACTION,
+  SEUILS_STADE,
+  XP_BONUS_REVENU_MAX,
+  XP_BONUS_REVENU_PALIER,
+  XP_POIDS,
+  HUMEUR_POIDS,
+} from './config';
+import type {
+  Compteurs,
+  DonneesMascotte,
+  HumeurBande,
+  JournalEntry,
+  Reaction,
+  Stade,
+  StadeInfo,
+} from './types';
+
+// --- utilitaires de dates (ISO AAAA-MM-JJ, sans fuseau) ---
+
+function enJours(iso: string): number {
+  return Math.floor(Date.parse(`${iso}T12:00:00Z`) / 86_400_000);
+}
+
+// Différence en jours entre deux dates ISO (a - b).
+export function diffJours(a: string, b: string): number {
+  return enJours(a) - enJours(b);
+}
+
+// Vrai si `date` est dans les FENETRE_JOURS derniers jours (aujourd'hui inclus).
+function dansFenetre(date: string, today: string): boolean {
+  const d = diffJours(today, date);
+  return d >= 0 && d <= FENETRE_JOURS;
+}
+
+function clamp(v: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, v));
+}
+
+// --- compteurs (réels seulement pour la compta) ---
+
+function revenusReels(data: DonneesMascotte) {
+  return data.mouvements.filter((m) => !m.previsionnel && m.type === 'revenu');
+}
+function depensesReelles(data: DonneesMascotte) {
+  return data.mouvements.filter((m) => !m.previsionnel && m.type === 'depense');
+}
+
+export function computeCompteurs(
+  data: DonneesMascotte,
+  today: string,
+): Compteurs {
+  return {
+    tachesFaites: data.taches.filter((t) => t.statut === 'fait').length,
+    contactsConclus: data.contacts.filter((c) => c.etape === 'conclu').length,
+    contactsPerdus: data.contacts.filter((c) => c.etape === 'perdu').length,
+    revenus: revenusReels(data).length,
+    depenses: depensesReelles(data).length,
+    evenementsPasses: data.evenements.filter((e) => e.date < today).length,
+    campagnesEnvoyees: data.campagnes.filter((c) => c.statut === 'envoye')
+      .length,
+  };
+}
+
+// --- Axe 1 : XP ---
+
+export function computeXp(data: DonneesMascotte, today: string): number {
+  const c = computeCompteurs(data, today);
+  const bonusMontant = revenusReels(data).reduce(
+    (acc, m) =>
+      acc +
+      Math.min(
+        Math.floor(m.montant / XP_BONUS_REVENU_PALIER),
+        XP_BONUS_REVENU_MAX,
+      ),
+    0,
+  );
+  return (
+    c.tachesFaites * XP_POIDS.tacheFaite +
+    c.contactsConclus * XP_POIDS.contactConclu +
+    c.revenus * XP_POIDS.revenu +
+    bonusMontant +
+    c.evenementsPasses * XP_POIDS.evenementPasse +
+    c.campagnesEnvoyees * XP_POIDS.campagne
+  );
+}
+
+// Détail d'un stade DONNÉ relativement à une XP (sert quand le stade est figé
+// par la règle de non-régression, indépendamment de l'XP courante).
+export function infoStade(stade: Stade, xp: number): StadeInfo {
+  const idx = SEUILS_STADE.findIndex((p) => p.stade === stade);
+  const courant = SEUILS_STADE[idx]!;
+  const suivant = SEUILS_STADE[idx + 1] ?? null;
+  const xpDansStade = xp - courant.xp;
+  const xpStadeSuivant = suivant ? suivant.xp - courant.xp : null;
+  const progressionStade = xpStadeSuivant
+    ? clamp(xpDansStade / xpStadeSuivant, 0, 1)
+    : 1;
+  return {
+    stade,
+    nom: courant.nom,
+    xpDansStade,
+    xpStadeSuivant,
+    progressionStade,
+  };
+}
+
+// Stade naturel correspondant à une XP (dernier palier atteint).
+export function computeStade(xp: number): StadeInfo {
+  let stade: Stade = SEUILS_STADE[0]!.stade;
+  for (const palier of SEUILS_STADE) {
+    if (xp >= palier.xp) stade = palier.stade;
+    else break;
+  }
+  return infoStade(stade, xp);
+}
+
+// --- Axe 2 : humeur ---
+
+// Dernière action positive datée (<= today), ou null si aucune.
+function derniereActionPositive(
+  data: DonneesMascotte,
+  today: string,
+): string | null {
+  const dates: string[] = [];
+  for (const m of revenusReels(data)) if (m.date <= today) dates.push(m.date);
+  for (const c of data.contacts) {
+    if (
+      c.etape === 'conclu' &&
+      c.dateDerniereInteraction &&
+      c.dateDerniereInteraction <= today
+    ) {
+      dates.push(c.dateDerniereInteraction);
+    }
+  }
+  for (const t of data.taches) {
+    if (t.statut === 'fait' && t.echeance && t.echeance <= today) {
+      dates.push(t.echeance);
+    }
+  }
+  for (const e of data.evenements) if (e.date < today) dates.push(e.date);
+  if (dates.length === 0) return null;
+  return dates.reduce((max, d) => (d > max ? d : max));
+}
+
+export function tachesEnRetard(data: DonneesMascotte, today: string): number {
+  return data.taches.filter(
+    (t) =>
+      t.statut !== 'fait' && t.echeance !== undefined && t.echeance < today,
+  ).length;
+}
+
+export function computeHumeur(data: DonneesMascotte, today: string): number {
+  let h = BASE_HUMEUR;
+
+  for (const m of revenusReels(data)) {
+    if (!dansFenetre(m.date, today)) continue;
+    h +=
+      HUMEUR_POIDS.revenu +
+      Math.min(
+        Math.floor(m.montant / 1000) * HUMEUR_POIDS.revenuBonusParMille,
+        HUMEUR_POIDS.revenuBonusMax,
+      );
+  }
+  for (const m of depensesReelles(data)) {
+    if (!dansFenetre(m.date, today)) continue;
+    h +=
+      HUMEUR_POIDS.depense -
+      Math.min(Math.floor(m.montant / 1000), HUMEUR_POIDS.depenseBonusMax);
+  }
+  for (const c of data.contacts) {
+    if (!c.dateDerniereInteraction) continue;
+    if (!dansFenetre(c.dateDerniereInteraction, today)) continue;
+    if (c.etape === 'conclu') h += HUMEUR_POIDS.contactConclu;
+    if (c.etape === 'perdu') h += HUMEUR_POIDS.contactPerdu;
+  }
+  for (const t of data.taches) {
+    if (
+      t.statut === 'fait' &&
+      t.echeance !== undefined &&
+      dansFenetre(t.echeance, today)
+    ) {
+      h += HUMEUR_POIDS.tacheFaite;
+    }
+    if (t.statut !== 'fait' && t.echeance !== undefined) {
+      const d = diffJours(today, t.echeance);
+      if (d > 0 && d <= FENETRE_JOURS) {
+        h += HUMEUR_POIDS.tacheRetard;
+        if (t.priorite === 'haute') h += HUMEUR_POIDS.tacheRetardHaute;
+      }
+    }
+  }
+  for (const e of data.evenements) {
+    const df = diffJours(e.date, today);
+    if (df >= 0 && df <= EVENEMENT_PROCHE_JOURS)
+      h += HUMEUR_POIDS.evenementProche;
+  }
+
+  const derniere = derniereActionPositive(data, today);
+  if (derniere) {
+    const jours = Math.max(0, diffJours(today, derniere));
+    h -= INACTIVITE_PAR_JOUR * Math.min(jours, INACTIVITE_JOURS_MAX);
+  }
+
+  return clamp(Math.round(h), 0, 100);
+}
+
+export function bandeHumeur(humeur: number): HumeurBande {
+  for (const b of BANDES) {
+    if (humeur >= b.min && humeur <= b.max) return b.bande;
+  }
+  return 'serein';
+}
+
+// --- Faim (Tamagotchi) ---
+
+// Faim courante (0 = affamée, 100 = repue), dérivée du dernier repas et du
+// temps écoulé. Idempotente : aucun cumul, recalculée à chaque rendu.
+export function computeFaim(
+  dernierRepasIso: string | undefined,
+  maintenantIso: string,
+): number {
+  if (!dernierRepasIso) return FAIM_MAX;
+  const heures =
+    (Date.parse(maintenantIso) - Date.parse(dernierRepasIso)) / 3_600_000;
+  if (Number.isNaN(heures)) return FAIM_MAX;
+  return clamp(
+    Math.round(FAIM_MAX - heures * FAIM_POINTS_PAR_HEURE),
+    0,
+    FAIM_MAX,
+  );
+}
+
+// Malus d'humeur quand la créature a faim (0 si rassasiée).
+export function penaliteFaim(faim: number): number {
+  if (faim >= FAIM_SEUIL_MALUS) return 0;
+  return Math.round(
+    ((FAIM_SEUIL_MALUS - faim) / FAIM_SEUIL_MALUS) * FAIM_MALUS_MAX,
+  );
+}
+
+// --- Cycle jour / nuit ---
+
+export function estNuit(heure: number): boolean {
+  return heure >= NUIT_DEBUT_HEURE || heure < NUIT_FIN_HEURE;
+}
+
+// --- Bulle de dialogue contextuelle ---
+
+// Phrase courte reflétant l'état du moment (nuit, faim, humeur, série, heure).
+export function messageBulle(p: {
+  nuit: boolean;
+  faim: number;
+  humeurBande: HumeurBande;
+  streak: number;
+  heure: number;
+}): string {
+  if (p.nuit) return 'Zzz... à demain !';
+  if (p.faim < 25) return "J'ai un petit creux...";
+  if (p.humeurBande === 'epuise') {
+    return 'Je suis vidée... un peu de bonnes nouvelles ?';
+  }
+  if (p.humeurBande === 'fatigue') return 'Journée chargée, hein ?';
+  if (p.streak >= 3) return `${p.streak} jours d'affilée, on assure !`;
+  if (p.humeurBande === 'radieux') return 'Quelle belle journée !';
+  if (p.heure < 12) return 'Bonjour ! Au travail ?';
+  if (p.heure < 18) return 'Bel après-midi !';
+  return 'Bonne soirée !';
+}
+
+// --- Diff d'événements : journal + réaction ---
+
+export interface DiffResultat {
+  entries: JournalEntry[];
+  reaction: Reaction | null;
+}
+
+export function diffEvents(
+  prev: Compteurs,
+  next: Compteurs,
+  maintenant: string,
+): DiffResultat {
+  const entries: JournalEntry[] = [];
+  const apparus = new Set<keyof Compteurs>();
+
+  (Object.keys(COMPTEUR_VERS_TYPE) as (keyof Compteurs)[]).forEach((cle) => {
+    const nb = next[cle] - prev[cle];
+    if (nb <= 0) return;
+    apparus.add(cle);
+    const type = COMPTEUR_VERS_TYPE[cle];
+    const meta = EVENEMENT_META[type];
+    entries.push({
+      id: `${type}-${maintenant}-${cle}`,
+      type,
+      label: nb > 1 ? `${meta.label} (${nb})` : meta.label,
+      axe: meta.axe,
+      delta: meta.unite * nb,
+      date: maintenant,
+    });
+  });
+
+  // Choix de la réaction la plus saillante.
+  let reaction: Reaction | null = null;
+  for (const type of PRIORITE_REACTION) {
+    const cle = (Object.keys(COMPTEUR_VERS_TYPE) as (keyof Compteurs)[]).find(
+      (k) => COMPTEUR_VERS_TYPE[k] === type,
+    );
+    if (!cle || !apparus.has(cle)) continue;
+    const meta = EVENEMENT_META[type];
+    reaction = {
+      id: `${type}-${maintenant}`,
+      type,
+      texte: meta.axe === 'xp' ? `+${meta.unite} XP` : `${meta.unite}`,
+      positif: meta.positif,
+    };
+    break;
+  }
+
+  return { entries, reaction };
+}
+
+// --- Conseil dynamique ---
+
+export function conseil(params: {
+  humeurBande: HumeurBande;
+  stade: number;
+  progressionStade: number;
+  tachesEnRetard: number;
+}): string {
+  const {
+    humeurBande,
+    stade,
+    progressionStade,
+    tachesEnRetard: retard,
+  } = params;
+  if (humeurBande === 'epuise' || humeurBande === 'fatigue') {
+    if (retard > 0) {
+      return retard > 1
+        ? `Termine ${retard} tâches en retard pour que Quetia se repose.`
+        : 'Termine ta tâche en retard pour que Quetia se repose.';
+    }
+    return 'Enregistre un revenu ou conclus un contact pour lui redonner le sourire.';
+  }
+  if (stade < 4 && progressionStade >= 0.7) {
+    return 'Encore un effort : conclus un contact pour faire évoluer Quetia.';
+  }
+  if (humeurBande === 'radieux') {
+    return 'Quetia rayonne, continue comme ça !';
+  }
+  return 'Quetia va bien. Une tâche terminée et elle sera ravie.';
+}

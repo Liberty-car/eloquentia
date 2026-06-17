@@ -1,0 +1,110 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "core": {
+    "background": {
+      "value": "#000000",
+      "role": "background",
+      "name": "color-black-0"
+    },
+    "text-primary": {
+      "value": "#cad0d9",
+      "role": "text-primary",
+      "name": "color-white-800"
+    },
+    "surface": {
+      "value": "#1a2233",
+      "role": "surface",
+      "name": "color-blue-800"
+    },
+    "text-muted": {
+      "value": "#505154",
+      "role": "text-muted"
+    },
+    "border": {
+      "value": "#505967",
+      "role": "border",
+      "name": "button-primary-border"
+    }
+  },
+  "status": {
+    "danger": {
+      "value": "#ff5b59",
+      "role": "danger",
+      "name": "color-red-500"
+    },
+    "warning": {
+      "value": "#f5b900",
+      "role": "warning",
+      "name": "color-yellow-500"
+    }
+  },
+  "extended": {
+    "tw-ring-offset-color": {
+      "value": "#ffffff",
+      "role": "unknown",
+      "name": "tw-ring-offset-color"
+    },
+    "color-white-200": {
+      "value": "#f5f0ff",
+      "role": "unknown",
+      "name": "color-white-200"
+    },
+    "color-white-500": {
+      "value": "#e4e7ec",
+      "role": "unknown",
+      "name": "color-white-500"
+    },
+    "color-black-700": {
+      "value": "#6f7988",
+      "role": "unknown",
+      "name": "color-black-700"
+    },
+    "color-black-100": {
+      "value": "#1c1d1f",
+      "role": "unknown",
+      "name": "color-black-100"
+    },
+    "color-blue-500": {
+      "value": "#266df0",
+      "role": "info",
+      "name": "color-blue-500"
+    },
+    "color-black-800": {
+      "value": "#8f99a8",
+      "role": "unknown",
+      "name": "color-black-800"
+    },
+    "color-18274b": {
+      "value": "#18274b",
+      "role": "unknown"
+    },
+    "color-9ea1a4": {
+      "value": "#9ea1a4",
+      "role": "unknown"
+    },
+    "color-blue-100": {
+      "value": "#daf4fc",
+      "role": "unknown",
+      "name": "color-blue-100"
+    },
+    "color-blue-400": {
+      "value": "#70a1f0",
+      "role": "unknown",
+      "name": "color-blue-400"
+    },
+    "color-black-500": {
+      "value": "#383e47",
+      "role": "unknown",
+      "name": "color-black-500"
+    },
+    "button-primary-bg-hover-to": {
+      "value": "#c8dcff",
+      "role": "unknown",
+      "name": "button-primary-bg-hover-to"
+    }
+  },
+  "meta": {
+    "theme": "dark",
+    "extracted": "2026-06-14"
+  }
+}

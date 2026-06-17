@@ -1,0 +1,94 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "core": {
+    "background": {
+      "value": "#212529",
+      "role": "background",
+      "name": "bs-body-color"
+    },
+    "text-primary": {
+      "value": "#ffffff",
+      "role": "text-primary",
+      "name": "bs-emphasis-color"
+    },
+    "text-muted": {
+      "value": "#a7acb1",
+      "role": "text-muted",
+      "name": "bs-secondary-text-emphasis"
+    },
+    "surface": {
+      "value": "#000000",
+      "role": "surface",
+      "name": "bs-emphasis-color"
+    }
+  },
+  "status": {
+    "danger": {
+      "value": "#ce9178",
+      "role": "danger"
+    }
+  },
+  "extended": {
+    "color-005fd5": {
+      "value": "#005fd5",
+      "role": "info"
+    },
+    "bs-secondary": {
+      "value": "#6c757d",
+      "role": "unknown",
+      "name": "bs-secondary"
+    },
+    "bs-secondary-border-subtle": {
+      "value": "#c4c8cb",
+      "role": "unknown",
+      "name": "bs-secondary-border-subtle"
+    },
+    "bs-primary": {
+      "value": "#0d6efd",
+      "role": "unknown",
+      "name": "bs-primary"
+    },
+    "color-1f3e64": {
+      "value": "#1f3e64",
+      "role": "unknown"
+    },
+    "color-032044": {
+      "value": "#032044",
+      "role": "unknown"
+    },
+    "color-6b7a90": {
+      "value": "#6b7a90",
+      "role": "unknown"
+    },
+    "color-d8d0d0": {
+      "value": "#d8d0d0",
+      "role": "unknown"
+    },
+    "color-9a9fad": {
+      "value": "#9a9fad",
+      "role": "unknown"
+    },
+    "bs-secondary-bg-subtle": {
+      "value": "#161719",
+      "role": "unknown",
+      "name": "bs-secondary-bg-subtle"
+    },
+    "bs-primary-bg-subtle": {
+      "value": "#031633",
+      "role": "unknown",
+      "name": "bs-primary-bg-subtle"
+    },
+    "color-162544": {
+      "value": "#162544",
+      "role": "unknown"
+    },
+    "color-f1f5f9": {
+      "value": "#f1f5f9",
+      "role": "unknown"
+    }
+  },
+  "meta": {
+    "theme": "dark",
+    "extracted": "2026-06-14"
+  }
+}

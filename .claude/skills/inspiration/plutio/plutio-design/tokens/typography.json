@@ -1,0 +1,260 @@
+{
+  "families": ["Roboto", "plutio-icons-set", "Roboto Mono"],
+  "scale": {
+    "heading-1": {
+      "fontFamily": "Roboto",
+      "fontSize": "5rem",
+      "fontWeight": "700",
+      "lineHeight": null,
+      "source": "css"
+    },
+    "heading-2": {
+      "fontFamily": "Roboto",
+      "fontSize": "56px",
+      "fontWeight": "700",
+      "lineHeight": null,
+      "source": "css"
+    },
+    "heading-3": {
+      "fontFamily": "Roboto",
+      "fontSize": "3rem",
+      "fontWeight": "700",
+      "lineHeight": null,
+      "source": "css"
+    },
+    "body": {
+      "fontFamily": "plutio-icons-set",
+      "fontSize": "10px",
+      "fontWeight": "400",
+      "lineHeight": null,
+      "source": "css"
+    },
+    "caption": {
+      "fontFamily": "plutio-icons-set",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "lineHeight": null,
+      "source": "css"
+    },
+    "code": {
+      "fontFamily": "Roboto Mono",
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": null,
+      "source": "css"
+    }
+  },
+  "fontFaces": [
+    {
+      "family": "plutio-icons-set",
+      "src": "https://www.plutio.com/static/icons/icons.woff2?vg3mwv",
+      "format": "truetype",
+      "weight": "400"
+    },
+    {
+      "family": "plutio-icons-set",
+      "src": "https://www.plutio.com/static/icons/icons.ttf?vg3mwv",
+      "format": "truetype",
+      "weight": "400"
+    },
+    {
+      "family": "plutio-icons-set",
+      "src": "https://www.plutio.com/static/icons/icons.woff?vg3mwv",
+      "format": "truetype",
+      "weight": "400"
+    },
+    {
+      "family": "plutio-icons-set",
+      "src": "https://www.plutio.com/static/icons/icons.svg?vg3mwv#icons",
+      "format": "truetype",
+      "weight": "400"
+    },
+    {
+      "family": "Roboto",
+      "src": "https://www.plutio.com/static/font/Roboto-Black.woff2",
+      "format": "woff2",
+      "weight": "900"
+    },
+    {
+      "family": "Roboto",
+      "src": "https://www.plutio.com/static/font/Roboto-Black.woff",
+      "format": "woff",
+      "weight": "900"
+    },
+    {
+      "family": "Roboto",
+      "src": "https://www.plutio.com/static/font/Roboto-BlackItalic.woff2",
+      "format": "woff2",
+      "weight": "900"
+    },
+    {
+      "family": "Roboto",
+      "src": "https://www.plutio.com/static/font/Roboto-BlackItalic.woff",
+      "format": "woff",
+      "weight": "900"
+    },
+    {
+      "family": "Roboto",
+      "src": "https://www.plutio.com/static/font/Roboto-Medium.woff2",
+      "format": "woff2",
+      "weight": "500"
+    },
+    {
+      "family": "Roboto",
+      "src": "https://www.plutio.com/static/font/Roboto-Medium.woff",
+      "format": "woff",
+      "weight": "500"
+    },
+    {
+      "family": "Roboto",
+      "src": "https://www.plutio.com/static/font/Roboto-Italic.woff2",
+      "format": "woff2",
+      "weight": "400"
+    },
+    {
+      "family": "Roboto",
+      "src": "https://www.plutio.com/static/font/Roboto-Italic.woff",
+      "format": "woff",
+      "weight": "400"
+    },
+    {
+      "family": "Roboto",
+      "src": "https://www.plutio.com/static/font/Roboto-Bold.woff2",
+      "format": "woff2",
+      "weight": "700"
+    },
+    {
+      "family": "Roboto",
+      "src": "https://www.plutio.com/static/font/Roboto-Bold.woff",
+      "format": "woff",
+      "weight": "700"
+    },
+    {
+      "family": "Roboto",
+      "src": "https://www.plutio.com/static/font/Roboto-Regular.woff2",
+      "format": "woff2",
+      "weight": "400"
+    },
+    {
+      "family": "Roboto",
+      "src": "https://www.plutio.com/static/font/Roboto-Regular.woff",
+      "format": "woff",
+      "weight": "400"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-Bold.woff2",
+      "format": "woff2",
+      "weight": "700"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-Bold.woff",
+      "format": "woff",
+      "weight": "700"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-Medium.woff2",
+      "format": "woff2",
+      "weight": "500"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-Medium.woff",
+      "format": "woff",
+      "weight": "500"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-ExtraBold.woff2",
+      "format": "woff2",
+      "weight": "700"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-ExtraBold.woff",
+      "format": "woff",
+      "weight": "700"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-ExtraLight.woff2",
+      "format": "woff2",
+      "weight": "200"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-ExtraLight.woff",
+      "format": "woff",
+      "weight": "200"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-Black.woff2",
+      "format": "woff2",
+      "weight": "900"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-Black.woff",
+      "format": "woff",
+      "weight": "900"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-Light.woff2",
+      "format": "woff2",
+      "weight": "300"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-Light.woff",
+      "format": "woff",
+      "weight": "300"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-Thin.woff2",
+      "format": "woff2",
+      "weight": "100"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-Thin.woff",
+      "format": "woff",
+      "weight": "100"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-SemiBold.woff2",
+      "format": "woff2",
+      "weight": "600"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-SemiBold.woff",
+      "format": "woff",
+      "weight": "600"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-Regular.woff2",
+      "format": "woff2",
+      "weight": "400"
+    },
+    {
+      "family": "Inter",
+      "src": "https://www.plutio.com/static/font/Inter-Regular.woff",
+      "format": "woff",
+      "weight": "400"
+    }
+  ],
+  "rules": {
+    "maxSizesPerScreen": 4,
+    "headingWeightRange": "600-700",
+    "bodyWeight": 400,
+    "lineHeightBody": 1.5,
+    "lineHeightHeading": 1.2
+  }
+}
