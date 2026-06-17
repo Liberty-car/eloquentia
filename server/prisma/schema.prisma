@@ -78,6 +78,7 @@ model User {
   assignedTasks Task[]        @relation("TaskAssignee")
   interactions  Interaction[]
   createdEvents Event[]
+  attachments   Attachment[]
 
   @@map("users")
 }
@@ -240,4 +241,26 @@ model EmailCampaign {
   updatedAt   DateTime       @updatedAt
 
   @@map("email_campaigns")
+}
+
+// ---------------------------------------------------------------------------
+// Pièces jointes (générique : référence souple vers n'importe quelle entité)
+// ---------------------------------------------------------------------------
+
+model Attachment {
+  id           String   @id @default(cuid())
+  entityType   String // "task" | "event" | "mouvement"
+  entityId     String // id de l'entité (id localStorage pour l'instant)
+  fileName     String
+  mimeType     String
+  sizeBytes    Int
+  storagePath  String
+  createdAt    DateTime @default(now())
+
+  uploadedById String?
+  uploadedBy   User?   @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+  @@index([uploadedById])
+  @@map("attachments")
 }
