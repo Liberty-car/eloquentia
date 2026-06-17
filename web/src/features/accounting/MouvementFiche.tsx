@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { SidePanel } from '../../components/ui/SidePanel';
 import { cn } from '../../lib/cn';
+import { PiecesJointes } from '../attachments/PiecesJointes';
 import { categoriesPour } from './categories';
 import {
   TYPES_MOUVEMENT,
@@ -57,7 +58,10 @@ export function MouvementFiche({
   evenementInitial?: string;
   previsionnelInitial?: boolean;
   onClose: () => void;
-  onSave: (values: MouvementFormValues) => void;
+  onSave: (
+    values: MouvementFormValues,
+    fichierEnAttente?: File,
+  ) => void | Promise<void>;
   onDelete: () => void;
   onAjouterCategorie: (label: string, type: TypeMouvement) => void;
   onSupprimerCategorie: (id: string) => void;
@@ -66,12 +70,34 @@ export function MouvementFiche({
     valeurs(mouvement, dateInitiale, evenementInitial, previsionnelInitial),
   );
   const [nouvelleCategorie, setNouvelleCategorie] = useState('');
+  // Justificatif obligatoire pour la compta : sur un nouveau mouvement, on garde
+  // le fichier « en attente » jusqu'a l'enregistrement (l'entite n'a d'id qu'apres
+  // creation). Sur un mouvement existant, on utilise le panneau <PiecesJointes>.
+  const [fichierEnAttente, setFichierEnAttente] = useState<File | null>(null);
+  const [erreur, setErreur] = useState<string | null>(null);
+  const [enregistrement, setEnregistrement] = useState(false);
 
   useEffect(() => {
     setValues(
       valeurs(mouvement, dateInitiale, evenementInitial, previsionnelInitial),
     );
+    setFichierEnAttente(null);
+    setErreur(null);
   }, [mouvement, dateInitiale, evenementInitial, previsionnelInitial]);
+
+  async function soumettre() {
+    setErreur(null);
+    setEnregistrement(true);
+    try {
+      await onSave(values, fichierEnAttente ?? undefined);
+    } catch {
+      setErreur(
+        "Échec de l'enregistrement du justificatif. Le mouvement n'a pas été créé.",
+      );
+    } finally {
+      setEnregistrement(false);
+    }
+  }
 
   function set<K extends keyof MouvementFormValues>(
     key: K,
@@ -250,35 +276,48 @@ export function MouvementFiche({
           </select>
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="m-justif"
-            className="text-xs font-medium text-encre-3"
-          >
-            Justificatif (optionnel)
-          </label>
-          <input
-            id="m-justif"
-            type="file"
-            onChange={(e) => {
-              const fichier = e.target.files?.[0];
-              if (fichier) set('justificatif', fichier.name);
-            }}
-            className="text-sm text-encre-2 file:mr-3 file:rounded-full file:border-0 file:bg-rose-brume file:px-3 file:py-1 file:text-xs file:font-medium file:text-velours"
-          />
-          {values.justificatif && (
-            <span className="flex items-center gap-2 text-xs text-encre-2">
-              {values.justificatif}
-              <button
-                type="button"
-                onClick={() => set('justificatif', '')}
-                className="text-erreur hover:underline"
-              >
-                Retirer
-              </button>
-            </span>
+        <div className="flex flex-col gap-1.5 border-t border-trait/60 pt-4">
+          <span className="text-xs font-medium text-encre-3">
+            Justificatif (obligatoire)
+          </span>
+          {mouvement?.id ? (
+            <PiecesJointes entityType="mouvement" entityId={mouvement.id} />
+          ) : (
+            <>
+              <input
+                id="m-justif"
+                type="file"
+                onChange={(e) => {
+                  const fichier = e.target.files?.[0] ?? null;
+                  setFichierEnAttente(fichier);
+                  set('justificatif', fichier ? fichier.name : '');
+                }}
+                className="text-sm text-encre-2 file:mr-3 file:rounded-full file:border-0 file:bg-rose-brume file:px-3 file:py-1 file:text-xs file:font-medium file:text-velours"
+              />
+              {fichierEnAttente ? (
+                <span className="flex items-center gap-2 text-xs text-encre-2">
+                  {fichierEnAttente.name}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFichierEnAttente(null);
+                      set('justificatif', '');
+                    }}
+                    className="text-erreur hover:underline"
+                  >
+                    Retirer
+                  </button>
+                </span>
+              ) : (
+                <span className="text-xs text-erreur">
+                  Un justificatif est obligatoire pour enregistrer un mouvement.
+                </span>
+              )}
+            </>
           )}
         </div>
+
+        {erreur && <p className="text-sm text-erreur">{erreur}</p>}
 
         <div className="mt-2 flex items-center justify-between">
           {mouvement ? (
@@ -288,8 +327,12 @@ export function MouvementFiche({
           ) : (
             <span />
           )}
-          <Button variant="primary" onClick={() => onSave(values)}>
-            Enregistrer
+          <Button
+            variant="primary"
+            onClick={() => void soumettre()}
+            disabled={enregistrement || (!mouvement && !fichierEnAttente)}
+          >
+            {enregistrement ? 'Enregistrement…' : 'Enregistrer'}
           </Button>
         </div>
       </div>

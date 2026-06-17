@@ -11,6 +11,7 @@ import { ComptaDashboardView } from './ComptaDashboardView';
 import { PrevisionnelView } from './PrevisionnelView';
 import { MouvementFiche } from './MouvementFiche';
 import { BudgetEvenementPanel } from './BudgetEvenementPanel';
+import { uploadAttachment } from '../attachments/attachmentsApi';
 import { filterMouvements, type ComptaFiltres } from './filter';
 import { mouvementsVersCsv, telechargerCsv } from './export';
 import {
@@ -114,7 +115,10 @@ export default function AccountingPage() {
     });
   }
 
-  async function enregistrer(values: MouvementFormValues) {
+  async function enregistrer(
+    values: MouvementFormValues,
+    fichierEnAttente?: File,
+  ) {
     const montant = Math.max(0, Number(values.montant) || 0);
     const opts: Partial<Pick<Mouvement, 'evenementId' | 'justificatif'>> = {};
     if (values.evenementId) opts.evenementId = values.evenementId;
@@ -129,11 +133,26 @@ export default function AccountingPage() {
       previsionnel: values.previsionnel,
       ...opts,
     };
-    if (fiche.mouvement) {
-      await mouvementsStore.replace(fiche.mouvement.id, base);
-    } else {
-      await mouvementsStore.create(base);
+    const cible = fiche.mouvement
+      ? await mouvementsStore.replace(fiche.mouvement.id, base)
+      : await mouvementsStore.create(base);
+
+    // Justificatif obligatoire : on televerse le fichier en attente sur le
+    // mouvement (nouvellement) cree. En cas d'echec, on annule la creation pour
+    // ne jamais laisser un nouveau mouvement sans justificatif.
+    if (fichierEnAttente) {
+      try {
+        await uploadAttachment(
+          { entityType: 'mouvement', entityId: cible.id },
+          fichierEnAttente,
+        );
+      } catch (e) {
+        if (!fiche.mouvement) await mouvementsStore.remove(cible.id);
+        rafraichir();
+        throw e;
+      }
     }
+
     fermerFiche();
     rafraichir();
   }
