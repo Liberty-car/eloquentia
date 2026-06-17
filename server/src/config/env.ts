@@ -15,6 +15,12 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(1, 'JWT_SECRET est requis'),
   CORS_ORIGIN: z.string().default('http://localhost:5173'),
   BREVO_API_KEY: z.string().optional(),
+  // Supabase Storage (pièces jointes). Requis pour le module attachments.
+  SUPABASE_URL: z.string().url().optional(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
+  SUPABASE_STORAGE_BUCKET: z.string().default('attachments'),
+  // Taille max d'une pièce jointe en octets (défaut 25 Mo).
+  ATTACHMENTS_MAX_BYTES: z.coerce.number().int().positive().default(26214400),
   LOG_LEVEL: z
     .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
     .default('info'),
