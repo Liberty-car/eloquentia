@@ -33,15 +33,6 @@ export function RootLayout() {
           />
         </div>
         <nav className="flex flex-1 flex-col gap-1">
-          <a
-            href="https://app.notion.com/p/3827b37b2a5780878bbbd975d1110a17?pvs=106"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mb-1 flex items-center gap-2.5 rounded-[10px] bg-gel-rose px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-velours"
-          >
-            <ExternalLink size={16} />
-            Notion
-          </a>
           {links.map(({ to, label, icon: Icon, end }) => (
             <NavLink
               key={to}
@@ -60,6 +51,15 @@ export function RootLayout() {
               {label}
             </NavLink>
           ))}
+          <a
+            href="https://app.notion.com/p/3827b37b2a5780878bbbd975d1110a17?pvs=106"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1 flex items-center gap-2.5 rounded-[10px] bg-gel-rose px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-velours"
+          >
+            <ExternalLink size={16} />
+            Donnez votre avis
+          </a>
         </nav>
         <div className="px-3 pb-1">
           <Mascotte />
